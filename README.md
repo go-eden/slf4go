@@ -98,7 +98,7 @@ func main() {
 
 # Benefit
 
-As we can see, golang changes very quickly, and logger-tech isn't very mature.
+As we can see, golang changes very quickly, and the logger-tech isn't very mature.
 
 Separate the logger implement from modules maybe a good idea.
 
