@@ -3,7 +3,7 @@ package slf4go
 import "testing"
 
 func TestSetLoggerFactory(t *testing.T) {
-    SetLoggerFactory(newSimpleLoggerFactory())
+    SetLoggerFactory(newNativeLoggerFactory())
 }
 
 func TestGetLogger(t *testing.T) {

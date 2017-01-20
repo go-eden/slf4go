@@ -4,7 +4,7 @@ package slf4go
 var factory LoggerFactory
 
 func init() {
-    factory = newSimpleLoggerFactory()
+    factory = newNativeLoggerFactory()
 }
 
 // support any log framework by LoggerFactory
