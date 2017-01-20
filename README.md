@@ -3,25 +3,24 @@ Simple Logger Facade for Golang, inspired by SLF4J
 
 # What is SLF4GO
 
-SLF4GO is not a logger framwork like logrus, it doesn't have better logger implement. 
+SLF4GO is not a logger framework like logrus, it doesn't have better logger implement. 
 
-But SLF4GO could be used for separating your business code from logrus/zap/log.
+But SLF4GO could be used for separating your business code from logger framework.
 
 # How SLF4GO does
 
-SLF4GO defined two interface, named `Logger` and `LoggerFactory`.
+SLF4GO provides two interface, named `Logger` and `LoggerFactory`.
 
 `LoggerFactory` used for adapting your logger framework.
 
-`Logger` used as log operation standards, like `Trace`, `Debug`, `Info`, `Warn`, `Error`, 
+`Logger` used as log operation standard API, like `Trace`, `Debug`, `Info`, `Warn`, `Error`, 
 all log methods of your logger framework need be wrapped by `Logger`.
 
-I have adapted logrus/log, you can use them directly.
+SLF4GO support logrus/log by default, you can use them directly.
 
 After above steps, 
-You can customize any logger framwork as your what, 
-then you need adapt it as a `LoggerFactory`, 
-and make it as the global LoggerFactory by `slf4go.SetLoggerFactory`.
+You can customize any logger framework as your what, 
+and then you need adapt it as a `LoggerFactory`, make it as the global LoggerFactory by `slf4go.SetLoggerFactory`.
 
 # Usage
 
@@ -53,6 +52,13 @@ func main() {
     logger.DebugF("I want %s", "Cycle Import")
     logger.ErrorF("please support it, in %02d second!", 1)
     modules.Login()
+}
+
+// just use slf4go everywhere, doesn't care aboud the implement.
+func Login() {
+    logger := slf4go.GetLogger("login")
+    logger.Info("do login")
+    logger.ErrorF("login result %s", "failed")
 }
 ```
 
