@@ -7,7 +7,7 @@ import (
 
 // doesn't need initialize
 
-// use log4go everywhere
+// use slf4go everywhere
 func main() {
     logger := slf4go.GetLogger("main")
     logger.DebugF("I want %s", "Cycle Import")
