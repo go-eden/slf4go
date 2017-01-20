@@ -1,10 +1,17 @@
 package slf4go
 
 // global log factory, could be replaced
-var factory LoggerFactory
+var defaultFactory LoggerFactory
+var definedFactory LoggerFactory
 
-func init() {
-    factory = newNativeLoggerFactory()
+func getLoggerFactory() LoggerFactory {
+    if definedFactory != nil {
+        return definedFactory
+    }
+    if defaultFactory == nil {
+        defaultFactory = newNativeLoggerFactory()
+    }
+    return defaultFactory
 }
 
 // support any log framework by LoggerFactory
@@ -12,10 +19,10 @@ func SetLoggerFactory(newFactory LoggerFactory) {
     if newFactory == nil {
         panic("LoggerFactory can't be nil")
     }
-    factory = newFactory
+    definedFactory = newFactory
 }
 
 // get logger from the LoggerFactory provided, if not, use the native log.
 func GetLogger(name string) Logger {
-    return factory.GetLogger(name)
+    return getLoggerFactory().GetLogger(name)
 }
