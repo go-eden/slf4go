@@ -16,4 +16,6 @@ func TestGetLogger(t *testing.T) {
     logger.WarnF("haha%02d", 1000, nil)
     logger.Error("what?")
     logger.ErrorF("what?..$%s$", "XD")
+    logger.FatalF("import cycle not allowed! %s", "shit...")
+    logger.Fatal("never reach here")
 }

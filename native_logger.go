@@ -17,7 +17,8 @@ const (
 
 const PREFIX_FORMAT = "[%s] [%s] "
 
-// simple logger that use native log
+//------------------------------------------------------------------------------------------------------------
+// simple logger that use log package
 type NativeLogger struct {
     name        string
     traceLogger *log.Logger
@@ -30,7 +31,7 @@ type NativeLogger struct {
 
 // it should be private
 func newNativeLogger(name string) *NativeLogger {
-    flag := log.Ldate | log.Ltime | log.Lshortfile
+    flag := log.Ldate | log.Ltime | log.Lshortfile | log.Lmicroseconds
     logger := &NativeLogger{}
     logger.name = name
     logger.traceLogger = log.New(os.Stdout, fmt.Sprintf(PREFIX_FORMAT, name, LEVEL_TRACE), flag)
@@ -94,7 +95,8 @@ func (logger *NativeLogger) FatalF(format string, args ...interface{}) {
     logger.fatalLogger.Fatalf(format, args)
 }
 
-//------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------
+// factory
 type NativeLoggerFactory struct {
 }
 
