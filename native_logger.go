@@ -31,7 +31,7 @@ type nativeLogger struct {
 
 // it should be private
 func newNativeLogger(name string) *nativeLogger {
-    flag := log.Ldate | log.Ltime | log.Lshortfile | log.Lmicroseconds
+    flag := log.Ldate | log.Ltime | log.Lmicroseconds
     logger := &nativeLogger{}
     logger.name = name
     logger.traceLogger = log.New(os.Stdout, fmt.Sprintf(prefix_format, name, l_TRACE), flag)
