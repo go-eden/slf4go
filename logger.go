@@ -1,9 +1,34 @@
 package slf4go
 
-// log interface
+type LEVEL int
+
+const (
+    LEVEL_TRACE LEVEL = iota
+    LEVEL_DEBUG
+    LEVEL_INFO
+    LEVEL_WARN
+    LEVEL_ERROR
+    LEVEL_FATAL
+)
+
+// Logger interface
 type Logger interface {
-    // get the name of logger, which was used for `GetLogger`
+    // Get the name of l, which was used for `GetLogger`
     GetName() string
+    // Setup l's level.
+    SetLevel(l LEVEL)
+    
+    IsEnableTrace() bool
+    
+    IsEnableDebug() bool
+    
+    IsEnableInfo() bool
+    
+    IsEnableWarn() bool
+    
+    IsEnableError() bool
+    
+    IsEnableFatal() bool
     
     Trace(args ...interface{})
     

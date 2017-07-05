@@ -4,8 +4,8 @@ import (
     log "github.com/Sirupsen/logrus"
     "os"
     "github.com/sisyphsu/slf4go"
-    "github.com/sisyphsu/slf4go/adapter/logrus"
     "github.com/sisyphsu/slf4go/example/modules"
+    logrus2 "github.com/sisyphsu/slf4go/adaptor/logrus"
 )
 
 // initialize logger, just like `log4j.properties` or `logback.xml`
@@ -18,7 +18,7 @@ func init() {
     log.SetLevel(log.WarnLevel)
     logger := log.New()
     // customize your root logger
-    slf4go.SetLoggerFactory(logrus.NewLoggerFactory(logger))
+    slf4go.SetLoggerFactory(logrus2.NewLogrusLoggerFactory(logger))
 }
 
 // use slf4go everywhere
