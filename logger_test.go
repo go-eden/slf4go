@@ -23,3 +23,8 @@ func TestGetLogger(t *testing.T) {
     logger.Fatal("never reach here")
     time.Sleep(time.Millisecond * 10)
 }
+
+func TestLoggerFormat(t *testing.T) {
+    logger := GetLogger("test")
+    logger.TraceF("arr: %+v, %d, %s", []int{1, 2, 3}, 102, "haha")
+}

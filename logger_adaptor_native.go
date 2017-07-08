@@ -4,6 +4,10 @@ import (
     "log"
     "os"
     "fmt"
+    "time"
+    "runtime"
+    "io"
+    "strings"
 )
 
 const (
@@ -16,104 +20,126 @@ const (
     call_depth = 2
 )
 
-const prefix_format = "[%s] [%s] %s"
-
 //------------------------------------------------------------------------------------------------------------
 // simple l that use log package
 type logger_adaptor_native struct {
     LoggerAdaptor
-    logger *log.Logger
+    tf   string
+    out  io.Writer
+    flag int
 }
 
 // it should be private
 func newNativeLogger(name string) *logger_adaptor_native {
-    flag := log.Ldate | log.Ltime | log.Lmicroseconds | log.Lshortfile
     logger := new(logger_adaptor_native)
     logger.name = name
-    logger.logger = log.New(os.Stdout, "", flag)
+    logger.out = os.Stdout
+    logger.tf = "2006-01-02 15:04:05.999999999"
+    logger.flag = log.Ldate | log.Ltime | log.Lmicroseconds | log.Lshortfile
     return logger
 }
 
 func (l *logger_adaptor_native) Trace(args ...interface{}) {
     if l.level <= LEVEL_TRACE {
         str := fmt.Sprintln(args)
-        l.logger.Output(call_depth, fmt.Sprintf(prefix_format, l_TRACE, l.name, str))
+        l.output(call_depth, l_TRACE, str)
     }
 }
 
 func (l *logger_adaptor_native) TraceF(format string, args ...interface{}) {
     if l.level <= LEVEL_TRACE {
         str := fmt.Sprintf(format, args)
-        l.logger.Output(call_depth, fmt.Sprintf(prefix_format, l_TRACE, l.name, str))
+        l.output(call_depth, l_TRACE, str)
     }
 }
 
 func (l *logger_adaptor_native) Debug(args ...interface{}) {
     if l.level <= LEVEL_DEBUG {
         str := fmt.Sprintln(args)
-        l.logger.Output(call_depth, fmt.Sprintf(prefix_format, l_DEBUG, l.name, str))
+        l.output(call_depth, l_DEBUG, str)
     }
 }
 
 func (l *logger_adaptor_native) DebugF(format string, args ...interface{}) {
     if l.level <= LEVEL_DEBUG {
         str := fmt.Sprintf(format, args)
-        l.logger.Output(call_depth, fmt.Sprintf(prefix_format, l_DEBUG, l.name, str))
+        l.output(call_depth, l_DEBUG, str)
     }
 }
 
 func (l *logger_adaptor_native) Info(args ...interface{}) {
     if l.level <= LEVEL_INFO {
         str := fmt.Sprintln(args)
-        l.logger.Output(call_depth, fmt.Sprintf(prefix_format, l_INFO, l.name, str))
+        l.output(call_depth, l_INFO, str)
     }
 }
 
 func (l *logger_adaptor_native) InfoF(format string, args ...interface{}) {
     if l.level <= LEVEL_INFO {
         str := fmt.Sprintf(format, args)
-        l.logger.Output(call_depth, fmt.Sprintf(prefix_format, l_INFO, l.name, str))
+        l.output(call_depth, l_INFO, str)
     }
 }
 
 func (l *logger_adaptor_native) Warn(args ...interface{}) {
     if l.level <= LEVEL_WARN {
         str := fmt.Sprintln(args)
-        l.logger.Output(call_depth, fmt.Sprintf(prefix_format, l_WARN, l.name, str))
+        l.output(call_depth, l_WARN, str)
     }
 }
 
 func (l *logger_adaptor_native) WarnF(format string, args ...interface{}) {
     if l.level <= LEVEL_WARN {
         str := fmt.Sprintf(format, args)
-        l.logger.Output(call_depth, fmt.Sprintf(prefix_format, l_WARN, l.name, str))
+        l.output(call_depth, l_WARN, str)
     }
 }
 
 func (l *logger_adaptor_native) Error(args ...interface{}) {
     if l.level <= LEVEL_ERROR {
         str := fmt.Sprintln(args)
-        l.logger.Output(call_depth, fmt.Sprintf(prefix_format, l_ERROR, l.name, str))
+        l.output(call_depth, l_ERROR, str)
     }
 }
 
 func (l *logger_adaptor_native) ErrorF(format string, args ...interface{}) {
     if l.level <= LEVEL_ERROR {
         str := fmt.Sprintf(format, args)
-        l.logger.Output(call_depth, fmt.Sprintf(prefix_format, l_ERROR, l.name, str))
+        l.output(call_depth, l_ERROR, str)
     }
 }
 
 func (l *logger_adaptor_native) Fatal(args ...interface{}) {
     str := fmt.Sprintln(args)
-    l.logger.Output(call_depth, fmt.Sprintf(prefix_format, l_FATAL, l.name, str))
+    l.output(call_depth, l_FATAL, str)
     os.Exit(1)
 }
 
 func (l *logger_adaptor_native) FatalF(format string, args ...interface{}) {
     str := fmt.Sprintf(format, args)
-    l.logger.Output(call_depth, fmt.Sprintf(prefix_format, l_FATAL, l.name, str))
+    l.output(call_depth, l_FATAL, str)
     os.Exit(1)
+}
+
+func (l *logger_adaptor_native) output(calldepth int, level, s string) error {
+    var file string
+    var line int
+    var ts string = time.Now().Format(l.tf)
+    if l.flag&(log.Lshortfile|log.Llongfile) != 0 {
+        var ok bool
+        _, file, line, ok = runtime.Caller(calldepth)
+        if !ok {
+            file = "???"
+            line = 0
+        }
+        lastIndex := strings.LastIndex(file, "/")
+        if lastIndex > 0 {
+            file = file[lastIndex+1:]
+        }
+    }
+    result := fmt.Sprintf("%s [%-5s] %s:%d %s", ts, level, file, line, s)
+    _, err := l.out.Write([]byte(result))
+    return err
 }
 
 //------------------------------------------------------------------------------------------------------------
