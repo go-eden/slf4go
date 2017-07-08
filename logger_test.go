@@ -26,5 +26,6 @@ func TestGetLogger(t *testing.T) {
 
 func TestLoggerFormat(t *testing.T) {
     logger := GetLogger("test")
-    logger.TraceF("arr: %+v, %d, %s", []int{1, 2, 3}, 102, "haha")
+    logger.TraceF("arr: %v, %d, %s", []int{1, 2, 3}, 102, "haha")
+    logger.TraceF("arr: %d, %d, %f", 123, 102, 122.33)
 }

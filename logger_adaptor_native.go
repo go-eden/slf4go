@@ -41,82 +41,82 @@ func newNativeLogger(name string) *logger_adaptor_native {
 
 func (l *logger_adaptor_native) Trace(args ...interface{}) {
     if l.level <= LEVEL_TRACE {
-        str := fmt.Sprintln(args)
+        str := fmt.Sprint(args...)
         l.output(call_depth, l_TRACE, str)
     }
 }
 
 func (l *logger_adaptor_native) TraceF(format string, args ...interface{}) {
     if l.level <= LEVEL_TRACE {
-        str := fmt.Sprintf(format, args)
+        str := fmt.Sprintf(format, args...)
         l.output(call_depth, l_TRACE, str)
     }
 }
 
 func (l *logger_adaptor_native) Debug(args ...interface{}) {
     if l.level <= LEVEL_DEBUG {
-        str := fmt.Sprintln(args)
+        str := fmt.Sprint(args...)
         l.output(call_depth, l_DEBUG, str)
     }
 }
 
 func (l *logger_adaptor_native) DebugF(format string, args ...interface{}) {
     if l.level <= LEVEL_DEBUG {
-        str := fmt.Sprintf(format, args)
+        str := fmt.Sprintf(format, args...)
         l.output(call_depth, l_DEBUG, str)
     }
 }
 
 func (l *logger_adaptor_native) Info(args ...interface{}) {
     if l.level <= LEVEL_INFO {
-        str := fmt.Sprintln(args)
+        str := fmt.Sprint(args...)
         l.output(call_depth, l_INFO, str)
     }
 }
 
 func (l *logger_adaptor_native) InfoF(format string, args ...interface{}) {
     if l.level <= LEVEL_INFO {
-        str := fmt.Sprintf(format, args)
+        str := fmt.Sprintf(format, args...)
         l.output(call_depth, l_INFO, str)
     }
 }
 
 func (l *logger_adaptor_native) Warn(args ...interface{}) {
     if l.level <= LEVEL_WARN {
-        str := fmt.Sprintln(args)
+        str := fmt.Sprint(args...)
         l.output(call_depth, l_WARN, str)
     }
 }
 
 func (l *logger_adaptor_native) WarnF(format string, args ...interface{}) {
     if l.level <= LEVEL_WARN {
-        str := fmt.Sprintf(format, args)
+        str := fmt.Sprintf(format, args...)
         l.output(call_depth, l_WARN, str)
     }
 }
 
 func (l *logger_adaptor_native) Error(args ...interface{}) {
     if l.level <= LEVEL_ERROR {
-        str := fmt.Sprintln(args)
+        str := fmt.Sprint(args...)
         l.output(call_depth, l_ERROR, str)
     }
 }
 
 func (l *logger_adaptor_native) ErrorF(format string, args ...interface{}) {
     if l.level <= LEVEL_ERROR {
-        str := fmt.Sprintf(format, args)
+        str := fmt.Sprintf(format, args...)
         l.output(call_depth, l_ERROR, str)
     }
 }
 
 func (l *logger_adaptor_native) Fatal(args ...interface{}) {
-    str := fmt.Sprintln(args)
+    str := fmt.Sprint(args...)
     l.output(call_depth, l_FATAL, str)
     os.Exit(1)
 }
 
 func (l *logger_adaptor_native) FatalF(format string, args ...interface{}) {
-    str := fmt.Sprintf(format, args)
+    str := fmt.Sprintf(format, args...)
     l.output(call_depth, l_FATAL, str)
     os.Exit(1)
 }
@@ -137,7 +137,7 @@ func (l *logger_adaptor_native) output(calldepth int, level, s string) error {
             file = file[lastIndex+1:]
         }
     }
-    result := fmt.Sprintf("%s [%-5s] %s:%d %s", ts, level, file, line, s)
+    result := fmt.Sprintf("%-29s [%-5s] %s:%d %s\n", ts, level, file, line, s)
     _, err := l.out.Write([]byte(result))
     return err
 }
