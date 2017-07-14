@@ -29,3 +29,28 @@ func TestLoggerFormat(t *testing.T) {
     logger.TraceF("arr: %v, %d, %s", []int{1, 2, 3}, 102, "haha")
     logger.TraceF("arr: %d, %d, %f", 123, 102, 122.33)
 }
+
+/**
+    BenchmarkLoggerCheckEnable-8      	500000000	         3.16 ns/op	       0 B/op	       0 allocs/op
+    BenchmarkLoggerNotCheckEnable-8   	50000000	        32.9 ns/op	      16 B/op	       1 allocs/op
+ */
+func BenchmarkLoggerCheckEnable(b *testing.B) {
+    logger := GetLogger("test")
+    logger.SetLevel(LEVEL_INFO)
+    b.ResetTimer()
+    b.ReportAllocs()
+    for i := 0; i < b.N; i++ {
+        if logger.IsEnableTrace() {
+            logger.TraceF("this is a test, b: %v, ", b)
+        }
+    }
+}
+func BenchmarkLoggerNotCheckEnable(b *testing.B) {
+    logger := GetLogger("test")
+    logger.SetLevel(LEVEL_INFO)
+    b.ResetTimer()
+    b.ReportAllocs()
+    for i := 0; i < b.N; i++ {
+        logger.TraceF("this is a test, b: %v, ", b)
+    }
+}
