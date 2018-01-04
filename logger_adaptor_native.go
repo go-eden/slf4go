@@ -6,7 +6,6 @@ import (
     "fmt"
     "time"
     "runtime"
-    "io"
     "strings"
 )
 
@@ -25,7 +24,6 @@ const (
 type logger_adaptor_native struct {
     LoggerAdaptor
     tf   string
-    out  io.Writer
     flag int
 }
 
@@ -33,7 +31,6 @@ type logger_adaptor_native struct {
 func newNativeLogger(name string) *logger_adaptor_native {
     logger := new(logger_adaptor_native)
     logger.name = name
-    logger.out = Writer
     logger.level = LEVEL_DEBUG
     logger.tf = "2006-01-02 15:04:05.999"
     logger.flag = log.Ldate | log.Ltime | log.Lmicroseconds | log.Lshortfile
@@ -139,7 +136,7 @@ func (l *logger_adaptor_native) output(calldepth int, level, s string) error {
         }
     }
     result := fmt.Sprintf("%-29s [%-5s] %s:%d %s\n", ts, level, file, line, s)
-    _, err := l.out.Write([]byte(result))
+    _, err := Writer.Write([]byte(result))
     return err
 }
 
