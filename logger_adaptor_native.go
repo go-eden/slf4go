@@ -33,8 +33,9 @@ type logger_adaptor_native struct {
 func newNativeLogger(name string) *logger_adaptor_native {
     logger := new(logger_adaptor_native)
     logger.name = name
-    logger.out = os.Stdout
-    logger.tf = "2006-01-02 15:04:05.999999999"
+    logger.out = Writer
+    logger.level = LEVEL_DEBUG
+    logger.tf = "2006-01-02 15:04:05.999"
     logger.flag = log.Ldate | log.Ltime | log.Lmicroseconds | log.Lshortfile
     return logger
 }
@@ -124,7 +125,7 @@ func (l *logger_adaptor_native) FatalF(format string, args ...interface{}) {
 func (l *logger_adaptor_native) output(calldepth int, level, s string) error {
     var file string
     var line int
-    var ts string = time.Now().Format(l.tf)
+    var ts = time.Now().Format(l.tf)
     if l.flag&(log.Lshortfile|log.Llongfile) != 0 {
         var ok bool
         _, file, line, ok = runtime.Caller(calldepth)

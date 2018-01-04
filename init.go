@@ -1,8 +1,14 @@
 package slf4go
 
+import (
+    "io"
+    "os"
+)
+
 // global log factory, could be replaced
 var defaultFactory LoggerFactory
 var definedFactory LoggerFactory
+var Writer io.Writer = os.Stdout
 
 // support any log framework by LoggerFactory
 func SetLoggerFactory(factory LoggerFactory) {
