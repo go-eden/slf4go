@@ -44,3 +44,7 @@ func (a *LoggerAdaptor) IsEnableError() bool {
 func (a *LoggerAdaptor) IsEnableFatal() bool {
     return a.level <= LEVEL_FATAL
 }
+
+func (a *LoggerAdaptor) IsEnablePanic() bool {
+    return a.level <= LEVEL_PANIC
+}

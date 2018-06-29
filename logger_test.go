@@ -24,6 +24,27 @@ func TestGetLogger(t *testing.T) {
     time.Sleep(time.Millisecond * 10)
 }
 
+func TestLoggerPanic(t *testing.T) {
+    defer func() {
+        if r := recover(); r == nil {
+            t.Errorf("The code did not panic as expected")
+        }
+    }()
+    logger := GetLogger("test")
+    logger.Panic("this is expected to cause panic")
+}
+
+func TestLoggerPanicF(t *testing.T) {
+    defer func() {
+        if r := recover(); r == nil {
+            t.Errorf("The code did not panic as expected")
+        }
+    }()
+    logger := GetLogger("test")
+    logger.PanicF("this is expected to cause panic: %d", 42)
+}
+
+
 func TestLoggerFormat(t *testing.T) {
     logger := GetLogger("test")
     logger.TraceF("arr: %v, %d, %s", []int{1, 2, 3}, 102, "haha")

@@ -38,3 +38,14 @@ func TestGetLogrusLogger(t *testing.T) {
     logger.FatalF("import cycle not allowed! %s", "shit...")
     logger.Fatal("never reach here")
 }
+
+func TestLogrusPanic(t *testing.T) {
+    logger := slf4go.GetLogger("test")
+
+    defer func() {
+        if r := recover(); r == nil {
+            t.Errorf("The code did not panic as expected")
+        }
+    }()
+    logger.Panic("this causes panic!")
+}

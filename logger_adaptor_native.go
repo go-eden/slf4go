@@ -16,6 +16,7 @@ const (
     l_WARN     = "WARN"
     l_ERROR    = "ERROR"
     l_FATAL    = "FATAL"
+    l_PANIC    = "PANIC"
     call_depth = 2
 )
 
@@ -108,15 +109,31 @@ func (l *logger_adaptor_native) ErrorF(format string, args ...interface{}) {
 }
 
 func (l *logger_adaptor_native) Fatal(args ...interface{}) {
-    str := fmt.Sprint(args...)
-    l.output(call_depth, l_FATAL, str)
-    os.Exit(1)
+    if l.level <= LEVEL_FATAL {
+        str := fmt.Sprint(args...)
+        l.output(call_depth, l_FATAL, str)
+        os.Exit(1)
+    }
 }
 
 func (l *logger_adaptor_native) FatalF(format string, args ...interface{}) {
+    if l.level <= LEVEL_FATAL {
+        str := fmt.Sprintf(format, args...)
+        l.output(call_depth, l_FATAL, str)
+        os.Exit(1)
+    }
+}
+
+func (l *logger_adaptor_native) Panic(args ...interface{}) {
+    str := fmt.Sprint(args...)
+    l.output(call_depth, l_PANIC, str)
+    panic("panic!")
+}
+
+func (l *logger_adaptor_native) PanicF(format string, args ...interface{}) {
     str := fmt.Sprintf(format, args...)
-    l.output(call_depth, l_FATAL, str)
-    os.Exit(1)
+    l.output(call_depth, l_PANIC, str)
+    panic(str)
 }
 
 func (l *logger_adaptor_native) output(calldepth int, level, s string) error {
