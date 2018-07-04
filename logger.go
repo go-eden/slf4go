@@ -9,6 +9,7 @@ const (
     LEVEL_WARN
     LEVEL_ERROR
     LEVEL_FATAL
+    LEVEL_PANIC
 )
 
 // Logger interface
@@ -29,6 +30,8 @@ type Logger interface {
     IsEnableError() bool
     
     IsEnableFatal() bool
+
+    IsEnablePanic() bool
     
     Trace(args ...interface{})
     
@@ -53,6 +56,10 @@ type Logger interface {
     Fatal(args ...interface{})
     
     FatalF(format string, args ...interface{})
+
+    Panic(args ...interface{})
+
+    PanicF(format string, args ...interface{})
 }
 
 // log FACTORY interface

@@ -2,7 +2,7 @@ package logrus
 
 import (
     log "github.com/Sirupsen/logrus"
-    "github.com/sisyphsu/slf4go"
+    "github.com/aellwein/slf4go"
 )
 
 //---------------------------------------------------------------------
@@ -34,6 +34,8 @@ func (logger *LoggerAdaptorLogrus) SetLevel(l slf4go.LEVEL) {
         logger.entry.Level = log.ErrorLevel
     case slf4go.LEVEL_FATAL:
         logger.entry.Level = log.FatalLevel
+    case slf4go.LEVEL_PANIC:
+        logger.entry.Level = log.PanicLevel
     }
 }
 func (logger *LoggerAdaptorLogrus) Trace(args ...interface{}) {
@@ -84,6 +86,14 @@ func (logger *LoggerAdaptorLogrus) Fatal(args ...interface{}) {
 
 func (logger *LoggerAdaptorLogrus) FatalF(format string, args ...interface{}) {
     logger.entry.Fatalf(format, args)
+}
+
+func (logger *LoggerAdaptorLogrus) Panic(args ...interface{}) {
+    logger.entry.Panicln(args)
+}
+
+func (logger *LoggerAdaptorLogrus) PanicF(format string, args ...interface{}) {
+    logger.entry.Panicf(format, args)
 }
 
 //------------------------------------------------------------------------------

@@ -3,9 +3,9 @@ package main
 import (
     log "github.com/Sirupsen/logrus"
     "os"
-    "github.com/sisyphsu/slf4go"
-    "github.com/sisyphsu/slf4go/example/modules"
-    logrus2 "github.com/sisyphsu/slf4go/adaptor/logrus"
+    "github.com/aellwein/slf4go"
+    "github.com/aellwein/slf4go/_example/modules"
+    logrus2 "github.com/aellwein/slf4go/adaptor/logrus"
 )
 
 // initialize logger, just like `log4j.properties` or `logback.xml`

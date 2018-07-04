@@ -2,7 +2,7 @@ package logrus
 
 import (
     "testing"
-    "github.com/sisyphsu/slf4go"
+    "github.com/aellwein/slf4go"
     log "github.com/Sirupsen/logrus"
     "os"
 )
@@ -37,4 +37,15 @@ func TestGetLogrusLogger(t *testing.T) {
     logger.ErrorF("what?..$%s$", "XD")
     logger.FatalF("import cycle not allowed! %s", "shit...")
     logger.Fatal("never reach here")
+}
+
+func TestLogrusPanic(t *testing.T) {
+    logger := slf4go.GetLogger("test")
+
+    defer func() {
+        if r := recover(); r == nil {
+            t.Errorf("The code did not panic as expected")
+        }
+    }()
+    logger.Panic("this causes panic!")
 }

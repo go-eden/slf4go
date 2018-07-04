@@ -1,8 +1,8 @@
 package main
 
 import (
-    "github.com/sisyphsu/slf4go"
-    "github.com/sisyphsu/slf4go/example/modules"
+    "github.com/aellwein/slf4go"
+    "github.com/aellwein/slf4go/_example/modules"
 )
 
 // doesn't need initialize
