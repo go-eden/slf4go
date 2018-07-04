@@ -2,7 +2,7 @@ package logrus
 
 import (
     log "github.com/Sirupsen/logrus"
-    "github.com/sisyphsu/slf4go"
+    "github.com/aellwein/slf4go"
 )
 
 //---------------------------------------------------------------------
