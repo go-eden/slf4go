@@ -3,7 +3,7 @@ package logrus
 import (
     "testing"
     "github.com/sisyphsu/slf4go"
-    log "github.com/Sirupsen/logrus"
+    log "github.com/sirupsen/logrus"
     "os"
 )
 
@@ -17,9 +17,9 @@ func TestGetLogrusLogger(t *testing.T) {
     // use defined logger factory
     l := log.New()
     l.WriterLevel(log.DebugLevel)
-    
+
     slf4go.SetLoggerFactory(NewLogrusLoggerFactory(l))
-    
+
     // do test
     logger := slf4go.GetLogger("test")
     logger.SetLevel(slf4go.LEVEL_TRACE)

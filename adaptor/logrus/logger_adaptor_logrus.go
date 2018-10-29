@@ -1,7 +1,7 @@
 package logrus
 
 import (
-    log "github.com/Sirupsen/logrus"
+    log "github.com/sirupsen/logrus"
     "github.com/sisyphsu/slf4go"
 )
 
