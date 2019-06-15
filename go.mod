@@ -1,4 +1,4 @@
-module github.com/go-xlog/xlog
+module github.com/go-eden/slf4go
 
 go 1.12
 
