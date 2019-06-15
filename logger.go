@@ -14,7 +14,7 @@ type Logger struct {
 func NewLogger(s string) *Logger {
 	return &Logger{
 		name:     s,
-		provider: nil, // TODO
+		provider: provider,
 	}
 }
 
@@ -124,15 +124,15 @@ func (l *Logger) Fatalf(format string, v ...interface{}) {
 	l.print(NewLog(LEVEL_FATAL, pc, fileName, line, msg))
 }
 
-// BindContextFields add the specified fields into the current Logger.
-func (l *Logger) BindContextFields(fields Fields) {
+// BindFields add the specified fields into the current Logger.
+func (l *Logger) BindFields(fields Fields) {
 	l.fields = NewFields(l.fields, fields)
 }
 
 // WithFields derive an new Logger by the specified fields from the current Logger.
 func (l *Logger) WithFields(fields Fields) *Logger {
 	result := NewLogger(l.name)
-	result.BindContextFields(NewFields(l.fields, fields))
+	result.BindFields(NewFields(l.fields, fields))
 	return result
 }
 

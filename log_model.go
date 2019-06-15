@@ -2,14 +2,10 @@ package slf4go
 
 import (
 	"github.com/huandu/go-tls"
-	"os"
 	"runtime"
 	"strings"
 	"time"
 )
-
-var pid = os.Getpid()                 // the cached id of current process
-var startTime = time.Now().UnixNano() // the start time of current process
 
 // Log represent an log, contains all properties.
 type Log struct {
@@ -41,7 +37,7 @@ func NewLog(level Level, pc uintptr, filename string, line int, msg string) *Log
 	return &Log{
 		Time:    now,
 		Uptime:  now - startTime,
-		Context: "",
+		Context: context,
 		Logger:  pkgName,
 
 		Pid:      pid,
