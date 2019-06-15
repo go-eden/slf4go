@@ -2,7 +2,7 @@ package slf4go
 
 type LoggerAdaptor struct {
 	name  string
-	level LEVEL
+	level Level
 }
 
 func (a *LoggerAdaptor) SetName(name string) {
@@ -13,11 +13,11 @@ func (a *LoggerAdaptor) GetName() string {
 	return a.name
 }
 
-func (a *LoggerAdaptor) GetLevel() LEVEL {
+func (a *LoggerAdaptor) GetLevel() Level {
 	return a.level
 }
 
-func (a *LoggerAdaptor) SetLevel(l LEVEL) {
+func (a *LoggerAdaptor) SetLevel(l Level) {
 	a.level = l
 }
 

@@ -19,7 +19,7 @@ func newLogrusLogger(name string, logger *log.Logger) *LoggerAdaptorLogrus {
 	return result
 }
 
-func (logger *LoggerAdaptorLogrus) SetLevel(l slf4go.LEVEL) {
+func (logger *LoggerAdaptorLogrus) SetLevel(l slf4go.Level) {
 	logger.LoggerAdaptor.SetLevel(l)
 	switch l {
 	case slf4go.LEVEL_TRACE:

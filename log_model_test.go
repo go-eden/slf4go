@@ -53,3 +53,8 @@ func BenchmarkNewLog(b *testing.B) {
 		NewLog()
 	}
 }
+
+func TestLevel(t *testing.T) {
+	t.Log(LEVEL_FATAL.String())
+	t.Log(LEVEL_TRACE)
+}

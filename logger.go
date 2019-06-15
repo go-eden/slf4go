@@ -1,23 +1,12 @@
 package slf4go
 
-type LEVEL int
-
-const (
-	LEVEL_TRACE LEVEL = iota
-	LEVEL_DEBUG
-	LEVEL_INFO
-	LEVEL_WARN
-	LEVEL_ERROR
-	LEVEL_FATAL
-)
-
 // Logger interface
 type Logger interface {
 	// GetName return the name of current Logger
 	GetName() string
 
 	// Setup Logger's level.
-	SetLevel(l LEVEL)
+	SetLevel(l Level)
 
 	IsEnableTrace() bool
 

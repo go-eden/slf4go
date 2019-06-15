@@ -6,9 +6,10 @@ import (
 	"time"
 )
 
-var pid = os.Getpid()
-var startTime = time.Now()
+var pid = os.Getpid()      // the cached process id
+var startTime = time.Now() // the start time of current process
 
+// Log represent an log, contains all properties.
 type Log struct {
 	Uptime  time.Duration `json:"uptime"`  // duration elapsed since started
 	Time    time.Time     `json:"date"`    // log's time
@@ -22,10 +23,11 @@ type Log struct {
 	Function string `json:"function"` // the function-name which generated this log
 	Line     int    `json:"line"`     // the line-number which generated this log
 
-	Level LEVEL  `json:"level"` // log's level
+	Level Level  `json:"level"` // log's level
 	Msg   string `json:"msg"`   // log's message
 }
 
+// Create an new Log instance
 func NewLog() *Log {
 	return &Log{
 		Time:   time.Now(),
