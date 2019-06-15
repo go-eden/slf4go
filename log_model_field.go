@@ -1,4 +1,4 @@
-package slf4go
+package xlog
 
 type Fields map[string]interface{}
 

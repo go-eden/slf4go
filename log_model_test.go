@@ -1,4 +1,4 @@
-package slf4go
+package xlog
 
 import (
 	"github.com/huandu/go-tls"
