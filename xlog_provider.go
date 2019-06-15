@@ -21,7 +21,7 @@ type Provider interface {
 	GetLevel(logger string) Level
 }
 
-// The default provider, print stdout directly
+// The default provider, just print stdout directly
 type StdProvider struct {
 	sync.Mutex
 }

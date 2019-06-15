@@ -7,27 +7,27 @@ import (
 )
 
 func TestGetLogger(t *testing.T) {
-	logger := NewLogger()
-	logger.Trace("are you prety?", true)
-	logger.Debugf("are you prety? %t", true)
-	logger.Info("how old are you? ", nil)
-	logger.Infof("i'm %010d", 18)
-	logger.Warn("you aren't honest! ")
-	//logger.Warnf("haha%02d", 1000, nil)
-	logger.Trace("set level to warn!!!!!")
-	logger.Trace("what?")
-	logger.Info("what?")
-	logger.Error("what?")
-	logger.Errorf("what?..$%s$", "XD")
-	logger.Fatalf("import cycle not allowed! %s", "shit...")
-	logger.Fatal("never reach here")
+	log := NewLogger()
+	log.Trace("are you prety?", true)
+	log.Debugf("are you prety? %t", true)
+	log.Info("how old are you? ", nil)
+	log.Infof("i'm %010d", 18)
+	log.Warn("you aren't honest! ")
+	log.Warnf("haha%02d %v", 1000, nil)
+	log.Trace("set level to warn!!!!!")
+	log.Trace("what?")
+	log.Info("what?")
+	log.Error("what?")
+	log.Errorf("what?..$%s$", "XD")
+	log.Fatalf("import cycle not allowed! %s", "shit...")
+	log.Fatal("never reach here")
 	time.Sleep(time.Millisecond * 10)
 }
 
 func TestLoggerFormat(t *testing.T) {
-	logger := GetLogger("test")
-	logger.Tracef("arr: %v, %d, %s", []int{1, 2, 3}, 102, "haha")
-	logger.Tracef("arr: %d, %d, %f", 123, 102, 122.33)
+	log := GetLogger("test")
+	log.Tracef("arr: %v, %d, %s", []int{1, 2, 3}, 102, "haha")
+	log.Tracef("arr: %d, %d, %f", 123, 102, 122.33)
 }
 
 /**
