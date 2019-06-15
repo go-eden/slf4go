@@ -1,4 +1,4 @@
-module github.com/sisyphsu/slf4go
+module github.com/go-xlog/xlog
 
 go 1.12
 
