@@ -1,46 +1,46 @@
 package slf4go
 
 type LoggerAdaptor struct {
-    name  string
-    level LEVEL
+	name  string
+	level LEVEL
 }
 
 func (a *LoggerAdaptor) SetName(name string) {
-    a.name = name
+	a.name = name
 }
 
 func (a *LoggerAdaptor) GetName() string {
-    return a.name
+	return a.name
 }
 
 func (a *LoggerAdaptor) GetLevel() LEVEL {
-    return a.level
+	return a.level
 }
 
 func (a *LoggerAdaptor) SetLevel(l LEVEL) {
-    a.level = l
+	a.level = l
 }
 
 func (a *LoggerAdaptor) IsEnableTrace() bool {
-    return a.level <= LEVEL_TRACE
+	return a.level <= LEVEL_TRACE
 }
 
 func (a *LoggerAdaptor) IsEnableDebug() bool {
-    return a.level <= LEVEL_DEBUG
+	return a.level <= LEVEL_DEBUG
 }
 
 func (a *LoggerAdaptor) IsEnableInfo() bool {
-    return a.level <= LEVEL_INFO
+	return a.level <= LEVEL_INFO
 }
 
 func (a *LoggerAdaptor) IsEnableWarn() bool {
-    return a.level <= LEVEL_WARN
+	return a.level <= LEVEL_WARN
 }
 
 func (a *LoggerAdaptor) IsEnableError() bool {
-    return a.level <= LEVEL_ERROR
+	return a.level <= LEVEL_ERROR
 }
 
 func (a *LoggerAdaptor) IsEnableFatal() bool {
-    return a.level <= LEVEL_FATAL
+	return a.level <= LEVEL_FATAL
 }
