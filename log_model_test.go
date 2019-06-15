@@ -3,6 +3,7 @@ package slf4go
 import (
 	"github.com/huandu/go-tls"
 	"os"
+	"runtime"
 	"testing"
 	"time"
 )
@@ -41,16 +42,19 @@ func BenchmarkPid(b *testing.B) {
 }
 
 func TestNewLog(t *testing.T) {
-	l := NewLog()
+	pc, file, line, _ := runtime.Caller(0)
+	l := NewLog(LEVEL_TRACE, pc, file, line, "")
 	t.Log(l)
 }
 
 // BenchmarkNewLog-12    	10000000	       169 ns/op	     160 B/op	       1 allocs/op
+// BenchmarkNewLog-12    	 2000000	       769 ns/op	     408 B/op	       4 allocs/op
 func BenchmarkNewLog(b *testing.B) {
 	b.ReportAllocs()
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		NewLog()
+		pc, file, line, _ := runtime.Caller(0)
+		NewLog(LEVEL_TRACE, pc, file, line, "")
 	}
 }
 

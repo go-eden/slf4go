@@ -145,11 +145,11 @@ func (l *logger_adaptor_native) output(calldepth int, level, s string) error {
 type nativeLoggerFactory struct {
 }
 
-func newNativeLoggerFactory() LoggerFactory {
-	factory := &nativeLoggerFactory{}
-	return factory
-}
-
-func (factory *nativeLoggerFactory) GetLogger(name string) Logger {
-	return newNativeLogger(name)
-}
+//func newNativeLoggerFactory() LoggerFactory {
+//	factory := &nativeLoggerFactory{}
+//	return factory
+//}
+//
+//func (factory *nativeLoggerFactory) GetLogger(name string) Logger {
+//	return newNativeLogger(name)
+//}

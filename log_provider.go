@@ -1,7 +1,7 @@
 package slf4go
 
-// LogProvider define the standard log print interface
-type LogProvider interface {
+// Provider define the standard log print interface
+type Provider interface {
 	// Retrieve the name of current provider, like 'default', 'logrus'...
 	Name() string
 

@@ -25,9 +25,14 @@ func GetLogger(name string) Logger {
 		factory = definedFactory
 	} else {
 		if defaultFactory == nil {
-			defaultFactory = newNativeLoggerFactory()
+			//defaultFactory = newNativeLoggerFactory()
 		}
 		factory = defaultFactory
 	}
 	return factory.GetLogger(name)
+}
+
+// LoggerFactory is Logger's provider
+type LoggerFactory interface {
+	GetLogger(name string) Logger
 }

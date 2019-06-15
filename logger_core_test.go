@@ -13,9 +13,8 @@ func TestGetLogger(t *testing.T) {
 	logger.Info("how old are you? ", nil)
 	logger.Infof("i'm %010d", 18)
 	logger.Warn("you aren't honest! ")
-	logger.Warnf("haha%02d", 1000, nil)
+	//logger.Warnf("haha%02d", 1000, nil)
 	logger.Trace("set level to warn!!!!!")
-	logger.SetLevel(LEVEL_WARN)
 	logger.Trace("what?")
 	logger.Info("what?")
 	logger.Error("what?")
@@ -37,7 +36,6 @@ func TestLoggerFormat(t *testing.T) {
 */
 func BenchmarkLoggerCheckEnable(b *testing.B) {
 	logger := GetLogger("test")
-	logger.SetLevel(LEVEL_INFO)
 	b.ResetTimer()
 	b.ReportAllocs()
 	for i := 0; i < b.N; i++ {
@@ -48,7 +46,6 @@ func BenchmarkLoggerCheckEnable(b *testing.B) {
 }
 func BenchmarkLoggerNotCheckEnable(b *testing.B) {
 	logger := GetLogger("test")
-	logger.SetLevel(LEVEL_INFO)
 	b.ResetTimer()
 	b.ReportAllocs()
 	for i := 0; i < b.N; i++ {
@@ -93,4 +90,22 @@ func findCallerFunc() (name string, file string, line int) {
 		name = f.Name()
 	}
 	return
+}
+
+/**
+skip=0
+BenchmarkCaller-12    	 3000000	       440 ns/op	     184 B/op	       2 allocs/op
+skip=1
+BenchmarkCaller-12    	 3000000	       480 ns/op	     184 B/op	       2 allocs/op
+skip=2
+BenchmarkCaller-12    	 2000000	       636 ns/op	     184 B/op	       2 allocs/op
+
+For better performance, should invoke caller at upper stack
+*/
+func BenchmarkCaller(b *testing.B) {
+	b.ResetTimer()
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		runtime.Caller(2)
+	}
 }
