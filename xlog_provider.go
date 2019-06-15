@@ -2,7 +2,7 @@ package xlog
 
 import (
 	"fmt"
-	"io"
+	"os"
 	"sync"
 	"time"
 )
@@ -22,23 +22,22 @@ type Provider interface {
 }
 
 // The default provider, print stdout directly
-type WriterProvider struct {
+type StdProvider struct {
 	sync.Mutex
-	writer io.Writer
 }
 
-func (p *WriterProvider) Name() string {
+func (p *StdProvider) Name() string {
 	return "default"
 }
 
-func (p *WriterProvider) Print(l *Log) {
+func (p *StdProvider) Print(l *Log) {
 	p.Lock()
 	defer p.Unlock()
 	var ts = time.Unix(0, l.Time).Format("2006-01-02 15:04:05.999")
 	result := fmt.Sprintf("%-29s [%-5s] [%s] %s:%d %s\n", ts, l.Level.String(), l.Logger, l.Filename, l.Line, l.Msg)
-	_, _ = p.writer.Write([]byte(result))
+	_, _ = os.Stdout.Write([]byte(result))
 }
 
-func (p *WriterProvider) GetLevel(logger string) Level {
+func (p *StdProvider) GetLevel(logger string) Level {
 	return LEVEL_TRACE
 }

@@ -21,7 +21,7 @@ func init() {
 	// setup default context
 	SetContext(exec)
 	// setup default provider
-	SetProvider(&WriterProvider{writer: os.Stdout})
+	SetProvider(new(StdProvider))
 }
 
 // SetContext update the global context name

@@ -2,6 +2,7 @@ package xlog
 
 import "strconv"
 
+// Log level
 type Level int
 
 const (

@@ -1,7 +1,9 @@
 package xlog
 
+// Fields represents attached fileds of log
 type Fields map[string]interface{}
 
+// Merge multi fileds into new Fields instance
 func NewFields(fields ...Fields) Fields {
 	result := Fields{}
 	for _, item := range fields {
