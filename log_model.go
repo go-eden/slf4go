@@ -62,8 +62,16 @@ func parseFunc(pc uintptr) (pkgName, funcName string) {
 	if f == nil {
 		return
 	}
+	var off int
 	name := f.Name()
-	off := strings.LastIndex(name, ".")
+	for i := len(name) - 1; i >= 0; i-- {
+		if name[i] == '/' {
+			break
+		}
+		if name[i] == '.' {
+			off = i
+		}
+	}
 	if off > 0 {
 		pkgName = name[:off]
 		if off < len(name)-1 {

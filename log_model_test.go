@@ -62,3 +62,23 @@ func TestLevel(t *testing.T) {
 	t.Log(LEVEL_FATAL.String())
 	t.Log(LEVEL_TRACE)
 }
+
+func TestParseCaller(t *testing.T) {
+	pc, _, _, _ := runtime.Caller(0)
+	pkgName, funName := parseFunc(pc)
+	t.Log(pkgName, funName)
+
+	go func() {
+		pc, _, _, _ := runtime.Caller(0)
+		pkgName, funName := parseFunc(pc)
+		t.Log(pkgName, funName)
+	}()
+	var f1 = func() {
+		pc, _, _, _ := runtime.Caller(0)
+		pkgName, funName := parseFunc(pc)
+		t.Log(pkgName, funName)
+	}
+	go f1()
+
+	time.Sleep(time.Second)
+}
