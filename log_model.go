@@ -8,15 +8,15 @@ import (
 	"time"
 )
 
-var pid = os.Getpid()      // the cached id of current process
-var startTime = time.Now() // the start time of current process
+var pid = os.Getpid()                 // the cached id of current process
+var startTime = time.Now().UnixNano() // the start time of current process
 
 // Log represent an log, contains all properties.
 type Log struct {
-	Uptime  time.Duration `json:"uptime"`  // duration elapsed since started
-	Time    time.Time     `json:"date"`    // log's time
-	Context string        `json:"context"` // log's context name, like application name
-	Logger  string        `json:"logger"`  // log's name, default is package
+	Uptime  int64  `json:"uptime"`  // time(ns) elapsed since started
+	Time    int64  `json:"date"`    // log's time(ns)
+	Context string `json:"context"` // log's context name, like application name
+	Logger  string `json:"logger"`  // log's name, default is package
 
 	Pid      int    `json:"pid"`      // the process id which generated this log
 	Gid      int    `json:"gid"`      // the goroutine id which generated this log
@@ -33,13 +33,14 @@ type Log struct {
 // Create an new Log instance
 // for better performance, caller should be provided by upper
 func NewLog(level Level, pc uintptr, filename string, line int, msg string) *Log {
-	if off := strings.LastIndex(filename, "/"); off > 0 && off < len(filename)-1 {
+	if off := strings.LastIndexByte(filename, '/'); off > 0 && off < len(filename)-1 {
 		filename = filename[off+1:]
 	}
 	pkgName, funcName := parseFunc(pc)
+	now := time.Now().UnixNano()
 	return &Log{
-		Time:    time.Now(),
-		Uptime:  time.Since(startTime),
+		Time:    now,
+		Uptime:  now - startTime,
 		Context: "",
 		Logger:  pkgName,
 

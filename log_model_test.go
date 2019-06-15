@@ -49,6 +49,9 @@ func TestNewLog(t *testing.T) {
 
 // BenchmarkNewLog-12    	10000000	       169 ns/op	     160 B/op	       1 allocs/op
 // BenchmarkNewLog-12    	 2000000	       769 ns/op	     408 B/op	       4 allocs/op
+// BenchmarkNewLog-12    	 2000000	       756 ns/op	     408 B/op	       4 allocs/op
+// BenchmarkNewLog-12    	 2000000	       726 ns/op	     408 B/op	       4 allocs/op
+// BenchmarkNewLog-12    	 2000000	       720 ns/op	     392 B/op	       4 allocs/op
 func BenchmarkNewLog(b *testing.B) {
 	b.ReportAllocs()
 	b.ResetTimer()
