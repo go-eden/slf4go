@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-var pid = os.Getpid()      // the cached process id
+var pid = os.Getpid()      // the cached id of current process
 var startTime = time.Now() // the start time of current process
 
 // Log represent an log, contains all properties.
@@ -23,8 +23,9 @@ type Log struct {
 	Function string `json:"function"` // the function-name which generated this log
 	Line     int    `json:"line"`     // the line-number which generated this log
 
-	Level Level  `json:"level"` // log's level
-	Msg   string `json:"msg"`   // log's message
+	Level  Level                  `json:"level"` // log's level
+	Msg    string                 `json:"msg"`   // log's message
+	Fields map[string]interface{} // additional custom fields
 }
 
 // Create an new Log instance

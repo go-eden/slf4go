@@ -5,9 +5,6 @@ type Logger interface {
 	// GetName return the name of current Logger
 	GetName() string
 
-	// Setup Logger's level.
-	SetLevel(l Level)
-
 	IsEnableTrace() bool
 
 	IsEnableDebug() bool
