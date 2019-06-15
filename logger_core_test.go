@@ -1,7 +1,6 @@
 package slf4go
 
 import (
-	"log"
 	"runtime"
 	"testing"
 	"time"
@@ -24,10 +23,6 @@ func TestGetLogger(t *testing.T) {
 	logger.Fatalf("import cycle not allowed! %s", "shit...")
 	logger.Fatal("never reach here")
 	time.Sleep(time.Millisecond * 10)
-}
-
-func TestLog(t *testing.T) {
-	log.Fatalf("%v")
 }
 
 func TestLoggerFormat(t *testing.T) {
