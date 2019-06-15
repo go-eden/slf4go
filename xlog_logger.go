@@ -11,7 +11,7 @@ type Logger struct {
 	provider Provider
 }
 
-func NewLogger(s string) *Logger {
+func newLogger(s string) *Logger {
 	return &Logger{
 		name:     s,
 		provider: provider,
@@ -131,7 +131,7 @@ func (l *Logger) BindFields(fields Fields) {
 
 // WithFields derive an new Logger by the specified fields from the current Logger.
 func (l *Logger) WithFields(fields Fields) *Logger {
-	result := NewLogger(l.name)
+	result := newLogger(l.name)
 	result.BindFields(NewFields(l.fields, fields))
 	return result
 }

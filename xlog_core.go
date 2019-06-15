@@ -2,6 +2,7 @@ package xlog
 
 import (
 	"os"
+	"runtime"
 	"strings"
 	"time"
 )
@@ -34,9 +35,16 @@ func SetProvider(p Provider) {
 	provider = p
 }
 
-// get l from the LoggerFactory provided, if not, use the native log.
+// NewLogger create new Logger by caller's package name
+func NewLogger() *Logger {
+	pc, _, _, _ := runtime.Caller(1)
+	pkgName, _ := parseFunc(pc)
+	return newLogger(pkgName)
+}
+
+// GetLogger create new Logger by the specified name
 func GetLogger(name string) *Logger {
-	return NewLogger(name)
+	return newLogger(name)
 }
 
 // LoggerFactory is Logger's provider

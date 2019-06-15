@@ -34,7 +34,7 @@ func (p *StdProvider) Print(l *Log) {
 	p.Lock()
 	defer p.Unlock()
 	var ts = time.Unix(0, l.Time).Format("2006-01-02 15:04:05.999")
-	result := fmt.Sprintf("%-29s [%-5s] [%s] %s:%d %s\n", ts, l.Level.String(), l.Logger, l.Filename, l.Line, l.Msg)
+	result := fmt.Sprintf("%s [%d] [%5s] [%s] %s:%d %s\n", ts, l.Gid, l.Level.String(), l.Logger, l.Filename, l.Line, l.Msg)
 	_, _ = os.Stdout.Write([]byte(result))
 }
 

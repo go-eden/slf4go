@@ -7,7 +7,7 @@ import (
 )
 
 func TestGetLogger(t *testing.T) {
-	logger := GetLogger("test")
+	logger := NewLogger()
 	logger.Trace("are you prety?", true)
 	logger.Debugf("are you prety? %t", true)
 	logger.Info("how old are you? ", nil)
