@@ -6,5 +6,5 @@ import "github.com/sisyphsu/slf4go"
 func Login() {
 	logger := slf4go.GetLogger("login")
 	logger.Info("do login")
-	logger.ErrorF("login result %s", "failed")
+	logger.Errorf("login result %s", "failed")
 }

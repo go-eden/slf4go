@@ -41,16 +41,16 @@ func (logger *LoggerAdaptorLogrus) Trace(args ...interface{}) {
 	logger.Debug(args)
 }
 
-func (logger *LoggerAdaptorLogrus) TraceF(format string, args ...interface{}) {
+func (logger *LoggerAdaptorLogrus) Tracef(format string, args ...interface{}) {
 	// forward to Debug
-	logger.DebugF(format, args)
+	logger.Debugf(format, args)
 }
 
 func (logger *LoggerAdaptorLogrus) Debug(args ...interface{}) {
 	logger.entry.Debugln(args)
 }
 
-func (logger *LoggerAdaptorLogrus) DebugF(format string, args ...interface{}) {
+func (logger *LoggerAdaptorLogrus) Debugf(format string, args ...interface{}) {
 	logger.entry.Debugf(format, args)
 }
 
@@ -58,7 +58,7 @@ func (logger *LoggerAdaptorLogrus) Info(args ...interface{}) {
 	logger.entry.Infoln(args)
 }
 
-func (logger *LoggerAdaptorLogrus) InfoF(format string, args ...interface{}) {
+func (logger *LoggerAdaptorLogrus) Infof(format string, args ...interface{}) {
 	logger.entry.Infof(format, args)
 }
 
@@ -66,7 +66,7 @@ func (logger *LoggerAdaptorLogrus) Warn(args ...interface{}) {
 	logger.entry.Warnln(args)
 }
 
-func (logger *LoggerAdaptorLogrus) WarnF(format string, args ...interface{}) {
+func (logger *LoggerAdaptorLogrus) Warnf(format string, args ...interface{}) {
 	logger.entry.Warnf(format, args)
 }
 
@@ -74,7 +74,7 @@ func (logger *LoggerAdaptorLogrus) Error(args ...interface{}) {
 	logger.entry.Errorln(args)
 }
 
-func (logger *LoggerAdaptorLogrus) ErrorF(format string, args ...interface{}) {
+func (logger *LoggerAdaptorLogrus) Errorf(format string, args ...interface{}) {
 	logger.entry.Errorf(format, args)
 }
 
@@ -82,7 +82,7 @@ func (logger *LoggerAdaptorLogrus) Fatal(args ...interface{}) {
 	logger.entry.Fatalln(args)
 }
 
-func (logger *LoggerAdaptorLogrus) FatalF(format string, args ...interface{}) {
+func (logger *LoggerAdaptorLogrus) Fatalf(format string, args ...interface{}) {
 	logger.entry.Fatalf(format, args)
 }
 

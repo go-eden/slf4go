@@ -44,7 +44,7 @@ func (l *logger_adaptor_native) Trace(args ...interface{}) {
 	}
 }
 
-func (l *logger_adaptor_native) TraceF(format string, args ...interface{}) {
+func (l *logger_adaptor_native) Tracef(format string, args ...interface{}) {
 	if l.level <= LEVEL_TRACE {
 		str := fmt.Sprintf(format, args...)
 		l.output(call_depth, l_TRACE, str)
@@ -58,7 +58,7 @@ func (l *logger_adaptor_native) Debug(args ...interface{}) {
 	}
 }
 
-func (l *logger_adaptor_native) DebugF(format string, args ...interface{}) {
+func (l *logger_adaptor_native) Debugf(format string, args ...interface{}) {
 	if l.level <= LEVEL_DEBUG {
 		str := fmt.Sprintf(format, args...)
 		l.output(call_depth, l_DEBUG, str)
@@ -72,7 +72,7 @@ func (l *logger_adaptor_native) Info(args ...interface{}) {
 	}
 }
 
-func (l *logger_adaptor_native) InfoF(format string, args ...interface{}) {
+func (l *logger_adaptor_native) Infof(format string, args ...interface{}) {
 	if l.level <= LEVEL_INFO {
 		str := fmt.Sprintf(format, args...)
 		l.output(call_depth, l_INFO, str)
@@ -86,7 +86,7 @@ func (l *logger_adaptor_native) Warn(args ...interface{}) {
 	}
 }
 
-func (l *logger_adaptor_native) WarnF(format string, args ...interface{}) {
+func (l *logger_adaptor_native) Warnf(format string, args ...interface{}) {
 	if l.level <= LEVEL_WARN {
 		str := fmt.Sprintf(format, args...)
 		l.output(call_depth, l_WARN, str)
@@ -100,7 +100,7 @@ func (l *logger_adaptor_native) Error(args ...interface{}) {
 	}
 }
 
-func (l *logger_adaptor_native) ErrorF(format string, args ...interface{}) {
+func (l *logger_adaptor_native) Errorf(format string, args ...interface{}) {
 	if l.level <= LEVEL_ERROR {
 		str := fmt.Sprintf(format, args...)
 		l.output(call_depth, l_ERROR, str)
@@ -113,7 +113,7 @@ func (l *logger_adaptor_native) Fatal(args ...interface{}) {
 	os.Exit(1)
 }
 
-func (l *logger_adaptor_native) FatalF(format string, args ...interface{}) {
+func (l *logger_adaptor_native) Fatalf(format string, args ...interface{}) {
 	str := fmt.Sprintf(format, args...)
 	l.output(call_depth, l_FATAL, str)
 	os.Exit(1)

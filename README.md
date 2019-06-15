@@ -69,7 +69,7 @@ func Login() {
 package main
 
 import (
-    log "github.com/Sirupsen/logrus"
+    log "github.com/sirupsen/logrus"
     "os"
     "github.com/sisyphsu/slf4go"
     "github.com/sisyphsu/slf4go/adapter/logrus"

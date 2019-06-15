@@ -13,9 +13,10 @@ const (
 
 // Logger interface
 type Logger interface {
-	// Get the name of l, which was used for `GetLogger`
+	// GetName return the name of current Logger
 	GetName() string
-	// Setup l's level.
+
+	// Setup Logger's level.
 	SetLevel(l LEVEL)
 
 	IsEnableTrace() bool
@@ -30,32 +31,32 @@ type Logger interface {
 
 	IsEnableFatal() bool
 
-	Trace(args ...interface{})
+	Trace(v ...interface{})
 
-	TraceF(format string, args ...interface{})
+	Tracef(format string, v ...interface{})
 
-	Debug(args ...interface{})
+	Debug(v ...interface{})
 
-	DebugF(format string, args ...interface{})
+	Debugf(format string, v ...interface{})
 
-	Info(args ...interface{})
+	Info(v ...interface{})
 
-	InfoF(format string, args ...interface{})
+	Infof(format string, v ...interface{})
 
-	Warn(args ...interface{})
+	Warn(v ...interface{})
 
-	WarnF(format string, args ...interface{})
+	Warnf(format string, v ...interface{})
 
-	Error(args ...interface{})
+	Error(v ...interface{})
 
-	ErrorF(format string, args ...interface{})
+	Errorf(format string, v ...interface{})
 
-	Fatal(args ...interface{})
+	Fatal(v ...interface{})
 
-	FatalF(format string, args ...interface{})
+	Fatalf(format string, v ...interface{})
 }
 
-// log FACTORY interface
+// LoggerFactory is Logger's provider
 type LoggerFactory interface {
 	GetLogger(name string) Logger
 }
