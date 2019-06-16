@@ -81,7 +81,7 @@ main.main()
 	/Users/sulin/workspace/go-eden/slf4go/example/default_example.go:20 +0x213
 ```
 
-Instructions: `panic` and `fatal` will print `goroutine` stack automatically.
+Notice: `panic` and `fatal` will print `goroutine` stack automatically.
 
 ## Custom Driver
 
