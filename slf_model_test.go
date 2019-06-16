@@ -42,46 +42,30 @@ func BenchmarkPid(b *testing.B) {
 }
 
 func TestNewLog(t *testing.T) {
-	pc, file, line, _ := runtime.Caller(0)
-	l := NewLog(LEVEL_TRACE, pc, file, line, "")
+	var pc [1]uintptr
+	_ = runtime.Callers(2, pc[:])
+	l := NewLog(LEVEL_TRACE, pc[0], "")
 	t.Log(l)
 }
 
 // BenchmarkNewLog-12    	10000000	       169 ns/op	     160 B/op	       1 allocs/op
 // BenchmarkNewLog-12    	 2000000	       769 ns/op	     408 B/op	       4 allocs/op
-// BenchmarkNewLog-12    	 2000000	       756 ns/op	     408 B/op	       4 allocs/op
-// BenchmarkNewLog-12    	 2000000	       726 ns/op	     408 B/op	       4 allocs/op
 // BenchmarkNewLog-12    	 2000000	       720 ns/op	     392 B/op	       4 allocs/op
+// after optimization by ParseStack
+// BenchmarkNewLog-12    	 3000000	       408 ns/op	     160 B/op	       1 allocs/op
+// ignore Callers
+// BenchmarkNewLog-12    	10000000	       145 ns/op	     160 B/op	       1 allocs/op
 func BenchmarkNewLog(b *testing.B) {
+	var pc [1]uintptr
 	b.ReportAllocs()
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		pc, file, line, _ := runtime.Caller(0)
-		NewLog(LEVEL_TRACE, pc, file, line, "")
+		_ = runtime.Callers(2, pc[:])
+		NewLog(LEVEL_TRACE, pc[0], "")
 	}
 }
 
 func TestLevel(t *testing.T) {
 	t.Log(LEVEL_FATAL.String())
 	t.Log(LEVEL_TRACE)
-}
-
-func TestParseCaller(t *testing.T) {
-	pc, _, _, _ := runtime.Caller(0)
-	pkgName, funName := parseFunc(pc)
-	t.Log(pkgName, funName)
-
-	go func() {
-		pc, _, _, _ := runtime.Caller(0)
-		pkgName, funName := parseFunc(pc)
-		t.Log(pkgName, funName)
-	}()
-	var f1 = func() {
-		pc, _, _, _ := runtime.Caller(0)
-		pkgName, funName := parseFunc(pc)
-		t.Log(pkgName, funName)
-	}
-	go f1()
-
-	time.Sleep(time.Second)
 }

@@ -2,10 +2,58 @@ package xlog
 
 import (
 	"github.com/huandu/go-tls"
-	"runtime"
-	"strings"
+	"strconv"
 	"time"
 )
+
+// Fields represents attached fileds of log
+type Fields map[string]interface{}
+
+// Merge multi fileds into new Fields instance
+func NewFields(fields ...Fields) Fields {
+	result := Fields{}
+	for _, item := range fields {
+		if item == nil {
+			continue
+		}
+		for k, v := range item {
+			result[k] = v
+		}
+	}
+	return result
+}
+
+// Log level
+type Level int
+
+const (
+	LEVEL_TRACE Level = iota
+	LEVEL_DEBUG
+	LEVEL_INFO
+	LEVEL_WARN
+	LEVEL_ERROR
+	LEVEL_FATAL
+)
+
+// Retrieve Level's name
+func (l Level) String() string {
+	switch l {
+	case LEVEL_TRACE:
+		return "TRACE"
+	case LEVEL_DEBUG:
+		return "DEBUG"
+	case LEVEL_INFO:
+		return "INFO"
+	case LEVEL_WARN:
+		return "WARN"
+	case LEVEL_ERROR:
+		return "ERROR"
+	case LEVEL_FATAL:
+		return "FATAL"
+	default:
+		return strconv.Itoa(int(l))
+	}
+}
 
 // Log represent an log, contains all properties.
 type Log struct {
@@ -28,54 +76,23 @@ type Log struct {
 
 // Create an new Log instance
 // for better performance, caller should be provided by upper
-func NewLog(level Level, pc uintptr, filename string, line int, msg string) *Log {
-	if off := strings.LastIndexByte(filename, '/'); off > 0 && off < len(filename)-1 {
-		filename = filename[off+1:]
-	}
-	pkgName, funcName := parseFunc(pc)
-	now := time.Now().UnixNano()
+func NewLog(level Level, pc uintptr, msg string) *Log {
+	stack := ParseStack(pc)
+	now := time.Now().UnixNano() // cost 80ns
 	return &Log{
 		Time:    now,
 		Uptime:  now - startTime,
 		Context: context,
-		Logger:  pkgName,
+		Logger:  stack.pkgName,
 
 		Pid:      pid,
 		Gid:      int(tls.ID()),
-		Package:  pkgName,
-		Filename: filename,
-		Function: funcName,
-		Line:     line,
+		Package:  stack.pkgName,
+		Filename: stack.fileName,
+		Function: stack.funcName,
+		Line:     stack.line,
 
-		Level:  level,
-		Msg:    msg,
-		Fields: Fields{},
+		Level: level,
+		Msg:   msg,
 	}
-}
-
-// Parse package and function by pc
-func parseFunc(pc uintptr) (pkgName, funcName string) {
-	f := runtime.FuncForPC(pc)
-	if f == nil {
-		return
-	}
-	var off int
-	name := f.Name()
-	for i := len(name) - 1; i >= 0; i-- {
-		if name[i] == '/' {
-			break
-		}
-		if name[i] == '.' {
-			off = i
-		}
-	}
-	if off > 0 {
-		pkgName = name[:off]
-		if off < len(name)-1 {
-			funcName = name[off+1:]
-		}
-	} else {
-		pkgName = name
-	}
-	return
 }
