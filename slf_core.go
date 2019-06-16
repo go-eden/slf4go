@@ -4,11 +4,10 @@ import (
 	"os"
 	"runtime"
 	"strings"
-	"time"
 )
 
-var pid = os.Getpid()                 // the cached id of current process
-var startTime = time.Now().UnixNano() // the start time of current process
+var pid = os.Getpid() // the cached id of current process
+var startTime = now() // the start time of current process
 
 var context string // the process name
 var driver Driver  // the log driver
@@ -25,7 +24,7 @@ func init() {
 	// setup default driver
 	SetDriver(new(StdDriver))
 	// setup default logger
-	logger = newLogger("")
+	logger = newLogger(nil)
 }
 
 // SetContext update the global context name
@@ -43,12 +42,12 @@ func GetLogger() *Logger {
 	var pc [1]uintptr
 	_ = runtime.Callers(2, pc[:])
 	s := ParseStack(pc[0])
-	return newLogger(s.pkgName)
+	return newLogger(&s.pkgName)
 }
 
 // NewLogger create new Logger by the specified name
 func NewLogger(name string) *Logger {
-	return newLogger(name)
+	return newLogger(&name)
 }
 
 // Trace record trace level's log

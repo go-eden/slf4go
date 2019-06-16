@@ -3,7 +3,7 @@ package xlog
 import (
 	"github.com/huandu/go-tls"
 	"strconv"
-	"time"
+	"syscall"
 )
 
 // Fields represents attached fileds of log
@@ -57,8 +57,8 @@ func (l Level) String() string {
 
 // Log represent an log, contains all properties.
 type Log struct {
-	Uptime  int64  `json:"uptime"`  // time(ns) elapsed since started
-	Time    int64  `json:"date"`    // log's time(ns)
+	Uptime  int64  `json:"uptime"`  // time(ms) elapsed since started
+	Time    int64  `json:"date"`    // log's time(ms)
 	Context string `json:"context"` // log's context name, like application name
 	Logger  string `json:"logger"`  // log's name, default is package
 
@@ -79,10 +79,10 @@ type Log struct {
 // for better performance, caller should be provided by upper
 func NewLog(level Level, pc uintptr, format *string, args []interface{}) *Log {
 	stack := ParseStack(pc)
-	now := time.Now().UnixNano() // cost 80ns
+	nowUs := now() // cost 40ns
 	return &Log{
-		Time:    now,
-		Uptime:  now - startTime,
+		Time:    nowUs,
+		Uptime:  nowUs - startTime,
 		Context: context,
 		Logger:  stack.pkgName,
 
@@ -97,4 +97,11 @@ func NewLog(level Level, pc uintptr, format *string, args []interface{}) *Log {
 		Format: format,
 		Args:   args,
 	}
+}
+
+// Obtain current microsecond, use syscall for better performance
+func now() int64 {
+	var tv syscall.Timeval
+	_ = syscall.Gettimeofday(&tv)
+	return int64(tv.Sec)*1e6 + int64(tv.Usec)
 }

@@ -6,22 +6,22 @@ import (
 
 // Logger wrap independent logger
 type Logger struct {
-	name   string
+	name   *string
 	fields Fields
 }
 
-func newLogger(s string) *Logger {
+func newLogger(s *string) *Logger {
 	return &Logger{name: s}
 }
 
 // Name obtain logger's name
 func (l *Logger) Name() string {
-	return l.name
+	return *l.name
 }
 
 // Level obtain logger's level, lower will not be print
 func (l *Logger) Level() Level {
-	return driver.GetLevel(l.name)
+	return driver.GetLevel(*l.name)
 }
 
 // BindFields add the specified fields into the current Logger.
@@ -68,7 +68,7 @@ func (l *Logger) IsEnableFatal() bool {
 
 // Trace record trace level's log
 func (l *Logger) Trace(v ...interface{}) {
-	if driver.GetLevel(l.name) > LEVEL_TRACE {
+	if driver.GetLevel(*l.name) > LEVEL_TRACE {
 		return // don't need log
 	}
 	var pc [1]uintptr
@@ -78,7 +78,7 @@ func (l *Logger) Trace(v ...interface{}) {
 
 // Tracef record trace level's log with custom format.
 func (l *Logger) Tracef(format string, v ...interface{}) {
-	if driver.GetLevel(l.name) > LEVEL_TRACE {
+	if driver.GetLevel(*l.name) > LEVEL_TRACE {
 		return // don't need log
 	}
 	var pc [1]uintptr
@@ -88,7 +88,7 @@ func (l *Logger) Tracef(format string, v ...interface{}) {
 
 // Debug record debug level's log
 func (l *Logger) Debug(v ...interface{}) {
-	if driver.GetLevel(l.name) > LEVEL_DEBUG {
+	if driver.GetLevel(*l.name) > LEVEL_DEBUG {
 		return // don't need log
 	}
 	var pc [1]uintptr
@@ -98,7 +98,7 @@ func (l *Logger) Debug(v ...interface{}) {
 
 // Debugf record debug level's log with custom format.
 func (l *Logger) Debugf(format string, v ...interface{}) {
-	if driver.GetLevel(l.name) > LEVEL_DEBUG {
+	if driver.GetLevel(*l.name) > LEVEL_DEBUG {
 		return // don't need log
 	}
 	var pc [1]uintptr
@@ -108,7 +108,7 @@ func (l *Logger) Debugf(format string, v ...interface{}) {
 
 // Info record info level's log
 func (l *Logger) Info(v ...interface{}) {
-	if driver.GetLevel(l.name) > LEVEL_INFO {
+	if driver.GetLevel(*l.name) > LEVEL_INFO {
 		return // don't need log
 	}
 	var pc [1]uintptr
@@ -118,7 +118,7 @@ func (l *Logger) Info(v ...interface{}) {
 
 // Infof record info level's log with custom format.
 func (l *Logger) Infof(format string, v ...interface{}) {
-	if driver.GetLevel(l.name) > LEVEL_INFO {
+	if driver.GetLevel(*l.name) > LEVEL_INFO {
 		return // don't need log
 	}
 	var pc [1]uintptr
@@ -128,7 +128,7 @@ func (l *Logger) Infof(format string, v ...interface{}) {
 
 // Warn record warn level's log
 func (l *Logger) Warn(v ...interface{}) {
-	if driver.GetLevel(l.name) > LEVEL_WARN {
+	if driver.GetLevel(*l.name) > LEVEL_WARN {
 		return // don't need log
 	}
 	var pc [1]uintptr
@@ -138,7 +138,7 @@ func (l *Logger) Warn(v ...interface{}) {
 
 // Warnf record warn level's log with custom format.
 func (l *Logger) Warnf(format string, v ...interface{}) {
-	if driver.GetLevel(l.name) > LEVEL_WARN {
+	if driver.GetLevel(*l.name) > LEVEL_WARN {
 		return // don't need log
 	}
 	var pc [1]uintptr
@@ -148,7 +148,7 @@ func (l *Logger) Warnf(format string, v ...interface{}) {
 
 // Error record error level's log
 func (l *Logger) Error(v ...interface{}) {
-	if driver.GetLevel(l.name) > LEVEL_ERROR {
+	if driver.GetLevel(*l.name) > LEVEL_ERROR {
 		return // don't need log
 	}
 	var pc [1]uintptr
@@ -158,7 +158,7 @@ func (l *Logger) Error(v ...interface{}) {
 
 // Errorf record error level's log with custom format.
 func (l *Logger) Errorf(format string, v ...interface{}) {
-	if driver.GetLevel(l.name) > LEVEL_ERROR {
+	if driver.GetLevel(*l.name) > LEVEL_ERROR {
 		return // don't need log
 	}
 	var pc [1]uintptr
@@ -168,7 +168,7 @@ func (l *Logger) Errorf(format string, v ...interface{}) {
 
 // Fatal record fatal level's log
 func (l *Logger) Fatal(v ...interface{}) {
-	if driver.GetLevel(l.name) > LEVEL_FATAL {
+	if driver.GetLevel(*l.name) > LEVEL_FATAL {
 		return // don't need log
 	}
 	var pc [1]uintptr
@@ -178,7 +178,7 @@ func (l *Logger) Fatal(v ...interface{}) {
 
 // Fatalf record fatal level's log with custom format.
 func (l *Logger) Fatalf(format string, v ...interface{}) {
-	if driver.GetLevel(l.name) > LEVEL_FATAL {
+	if driver.GetLevel(*l.name) > LEVEL_FATAL {
 		return // don't need log
 	}
 	var pc [1]uintptr
@@ -189,7 +189,9 @@ func (l *Logger) Fatalf(format string, v ...interface{}) {
 // do print
 func (l *Logger) print(level Level, pc uintptr, v ...interface{}) {
 	log := NewLog(level, pc, nil, v)
-	log.Logger = l.name
+	if l.name != nil {
+		log.Logger = *l.name
+	}
 	log.Fields = l.fields
 	driver.Print(log)
 }
@@ -197,7 +199,9 @@ func (l *Logger) print(level Level, pc uintptr, v ...interface{}) {
 // do printf
 func (l *Logger) printf(level Level, pc uintptr, format string, v ...interface{}) {
 	log := NewLog(level, pc, &format, v)
-	log.Logger = l.name
+	if l.name != nil {
+		log.Logger = *l.name
+	}
 	log.Fields = l.fields
 	driver.Print(log)
 }
