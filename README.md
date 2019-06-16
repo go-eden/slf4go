@@ -117,7 +117,7 @@ type Log struct {
 
 By default, `Slf4go` provide a `StdDriver` as fallback, it will format `Log` and print it into `stdout` directly.
 
-If you don't need other features, you could use it directly.
+If you don't need other features, could use it directly.
 
 ## Use `slf4go-classic`
 
@@ -132,6 +132,8 @@ TODO
 TODO
 
 # Custom Hook
+
+TODO
 
 # Performance
 
