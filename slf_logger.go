@@ -5,6 +5,7 @@ import (
 	"runtime"
 )
 
+// Logger wrap independent logger
 type Logger struct {
 	name   string
 	fields Fields
@@ -14,9 +15,14 @@ func newLogger(s string) *Logger {
 	return &Logger{name: s}
 }
 
-// GetName obtain logger's name
-func (l *Logger) GetName() string {
+// Name obtain logger's name
+func (l *Logger) Name() string {
 	return l.name
+}
+
+// Level obtain logger's level, lower will not be print
+func (l *Logger) Level() Level {
+	return driver.GetLevel(l.name)
 }
 
 // BindFields add the specified fields into the current Logger.
@@ -33,61 +39,37 @@ func (l *Logger) WithFields(fields Fields) *Logger {
 
 // Whether trace of current logger enabled or not
 func (l *Logger) IsEnableTrace() bool {
-	var pc [1]uintptr
-	if l.name != "" {
-		_ = runtime.Callers(2, pc[:])
-	}
-	return l.level(pc[0]) >= LEVEL_TRACE
+	return l.Level() <= LEVEL_TRACE
 }
 
 // Whether debug of current logger enabled or not
 func (l *Logger) IsEnableDebug() bool {
-	var pc [1]uintptr
-	if l.name != "" {
-		_ = runtime.Callers(2, pc[:])
-	}
-	return l.level(pc[0]) >= LEVEL_DEBUG
+	return l.Level() <= LEVEL_DEBUG
 }
 
 // Whether info of current logger enabled or not
 func (l *Logger) IsEnableInfo() bool {
-	var pc [1]uintptr
-	if l.name != "" {
-		_ = runtime.Callers(2, pc[:])
-	}
-	return l.level(pc[0]) >= LEVEL_INFO
+	return l.Level() <= LEVEL_INFO
 }
 
 // Whether warn of current logger enabled or not
 func (l *Logger) IsEnableWarn() bool {
-	var pc [1]uintptr
-	if l.name != "" {
-		_ = runtime.Callers(2, pc[:])
-	}
-	return l.level(pc[0]) >= LEVEL_WARN
+	return l.Level() <= LEVEL_WARN
 }
 
 // Whether error of current logger enabled or not
 func (l *Logger) IsEnableError() bool {
-	var pc [1]uintptr
-	if l.name != "" {
-		_ = runtime.Callers(2, pc[:])
-	}
-	return l.level(pc[0]) >= LEVEL_ERROR
+	return l.Level() <= LEVEL_ERROR
 }
 
 // Whether fatal of current logger enabled or not
 func (l *Logger) IsEnableFatal() bool {
-	var pc [1]uintptr
-	if l.name != "" {
-		_ = runtime.Callers(2, pc[:])
-	}
-	return l.level(pc[0]) >= LEVEL_FATAL
+	return l.Level() <= LEVEL_FATAL
 }
 
 // Trace record trace level's log
 func (l *Logger) Trace(v ...interface{}) {
-	if l.name != "" && l.level(0) > LEVEL_TRACE {
+	if driver.GetLevel(l.name) > LEVEL_TRACE {
 		return // don't need log
 	}
 	var pc [1]uintptr
@@ -97,7 +79,7 @@ func (l *Logger) Trace(v ...interface{}) {
 
 // Tracef record trace level's log with custom format.
 func (l *Logger) Tracef(format string, v ...interface{}) {
-	if l.name != "" && l.level(0) > LEVEL_TRACE {
+	if driver.GetLevel(l.name) > LEVEL_TRACE {
 		return // don't need log
 	}
 	var pc [1]uintptr
@@ -107,7 +89,7 @@ func (l *Logger) Tracef(format string, v ...interface{}) {
 
 // Debug record debug level's log
 func (l *Logger) Debug(v ...interface{}) {
-	if l.name != "" && l.level(0) > LEVEL_DEBUG {
+	if driver.GetLevel(l.name) > LEVEL_DEBUG {
 		return // don't need log
 	}
 	var pc [1]uintptr
@@ -117,7 +99,7 @@ func (l *Logger) Debug(v ...interface{}) {
 
 // Debugf record debug level's log with custom format.
 func (l *Logger) Debugf(format string, v ...interface{}) {
-	if l.name != "" && l.level(0) > LEVEL_DEBUG {
+	if driver.GetLevel(l.name) > LEVEL_DEBUG {
 		return // don't need log
 	}
 	var pc [1]uintptr
@@ -127,7 +109,7 @@ func (l *Logger) Debugf(format string, v ...interface{}) {
 
 // Info record info level's log
 func (l *Logger) Info(v ...interface{}) {
-	if l.name != "" && l.level(0) > LEVEL_INFO {
+	if driver.GetLevel(l.name) > LEVEL_INFO {
 		return // don't need log
 	}
 	var pc [1]uintptr
@@ -137,7 +119,7 @@ func (l *Logger) Info(v ...interface{}) {
 
 // Infof record info level's log with custom format.
 func (l *Logger) Infof(format string, v ...interface{}) {
-	if l.name != "" && l.level(0) > LEVEL_INFO {
+	if driver.GetLevel(l.name) > LEVEL_INFO {
 		return // don't need log
 	}
 	var pc [1]uintptr
@@ -147,7 +129,7 @@ func (l *Logger) Infof(format string, v ...interface{}) {
 
 // Warn record warn level's log
 func (l *Logger) Warn(v ...interface{}) {
-	if l.name != "" && l.level(0) > LEVEL_WARN {
+	if driver.GetLevel(l.name) > LEVEL_WARN {
 		return // don't need log
 	}
 	var pc [1]uintptr
@@ -157,7 +139,7 @@ func (l *Logger) Warn(v ...interface{}) {
 
 // Warnf record warn level's log with custom format.
 func (l *Logger) Warnf(format string, v ...interface{}) {
-	if l.name != "" && l.level(0) > LEVEL_WARN {
+	if driver.GetLevel(l.name) > LEVEL_WARN {
 		return // don't need log
 	}
 	var pc [1]uintptr
@@ -167,7 +149,7 @@ func (l *Logger) Warnf(format string, v ...interface{}) {
 
 // Error record error level's log
 func (l *Logger) Error(v ...interface{}) {
-	if l.name != "" && l.level(0) > LEVEL_ERROR {
+	if driver.GetLevel(l.name) > LEVEL_ERROR {
 		return // don't need log
 	}
 	var pc [1]uintptr
@@ -177,7 +159,7 @@ func (l *Logger) Error(v ...interface{}) {
 
 // Errorf record error level's log with custom format.
 func (l *Logger) Errorf(format string, v ...interface{}) {
-	if l.name != "" && l.level(0) > LEVEL_ERROR {
+	if driver.GetLevel(l.name) > LEVEL_ERROR {
 		return // don't need log
 	}
 	var pc [1]uintptr
@@ -187,7 +169,7 @@ func (l *Logger) Errorf(format string, v ...interface{}) {
 
 // Fatal record fatal level's log
 func (l *Logger) Fatal(v ...interface{}) {
-	if l.name != "" && l.level(0) > LEVEL_FATAL {
+	if driver.GetLevel(l.name) > LEVEL_FATAL {
 		return // don't need log
 	}
 	var pc [1]uintptr
@@ -197,7 +179,7 @@ func (l *Logger) Fatal(v ...interface{}) {
 
 // Fatalf record fatal level's log with custom format.
 func (l *Logger) Fatalf(format string, v ...interface{}) {
-	if l.name != "" && l.level(0) > LEVEL_FATAL {
+	if driver.GetLevel(l.name) > LEVEL_FATAL {
 		return // don't need log
 	}
 	var pc [1]uintptr
@@ -209,6 +191,7 @@ func (l *Logger) Fatalf(format string, v ...interface{}) {
 func (l *Logger) print(level Level, pc uintptr, v ...interface{}) {
 	msg := fmt.Sprint(v...)
 	log := NewLog(level, pc, msg)
+	log.Logger = l.name
 	driver.Print(log)
 }
 
@@ -216,14 +199,6 @@ func (l *Logger) print(level Level, pc uintptr, v ...interface{}) {
 func (l *Logger) printf(level Level, pc uintptr, format string, v ...interface{}) {
 	msg := fmt.Sprintf(format, v...)
 	log := NewLog(level, pc, msg)
+	log.Logger = l.name
 	driver.Print(log)
-}
-
-// retrieve current logger's lowest level
-func (l *Logger) level(pc uintptr) Level {
-	logger := l.name
-	if logger == "" {
-		logger = ParseStack(pc).pkgName
-	}
-	return driver.GetLevel(logger)
 }
