@@ -49,4 +49,6 @@ func TestNewLogger(t *testing.T) {
 	log.Error("error")
 	SetContext("test")
 	log.Fatal("fatal")
+
+	log.Warn(GetContext())
 }

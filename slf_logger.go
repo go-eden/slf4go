@@ -87,7 +87,7 @@ func (l *Logger) Tracef(format string, v ...interface{}) {
 	}
 	var pc [1]uintptr
 	_ = runtime.Callers(2, pc[:])
-	l.printf(LEVEL_TRACE, pc[0], format, v...)
+	l.printf(LEVEL_TRACE, pc[0], &format, v...)
 }
 
 // Debug record debug level's log
@@ -107,7 +107,7 @@ func (l *Logger) Debugf(format string, v ...interface{}) {
 	}
 	var pc [1]uintptr
 	_ = runtime.Callers(2, pc[:])
-	l.printf(LEVEL_DEBUG, pc[0], format, v...)
+	l.printf(LEVEL_DEBUG, pc[0], &format, v...)
 }
 
 // Info record info level's log
@@ -127,7 +127,7 @@ func (l *Logger) Infof(format string, v ...interface{}) {
 	}
 	var pc [1]uintptr
 	_ = runtime.Callers(2, pc[:])
-	l.printf(LEVEL_INFO, pc[0], format, v...)
+	l.printf(LEVEL_INFO, pc[0], &format, v...)
 }
 
 // Warn record warn level's log
@@ -147,7 +147,7 @@ func (l *Logger) Warnf(format string, v ...interface{}) {
 	}
 	var pc [1]uintptr
 	_ = runtime.Callers(2, pc[:])
-	l.printf(LEVEL_WARN, pc[0], format, v...)
+	l.printf(LEVEL_WARN, pc[0], &format, v...)
 }
 
 // Error record error level's log
@@ -167,7 +167,7 @@ func (l *Logger) Errorf(format string, v ...interface{}) {
 	}
 	var pc [1]uintptr
 	_ = runtime.Callers(2, pc[:])
-	l.printf(LEVEL_ERROR, pc[0], format, v...)
+	l.printf(LEVEL_ERROR, pc[0], &format, v...)
 }
 
 // Fatal record fatal level's log
@@ -187,23 +187,24 @@ func (l *Logger) Fatalf(format string, v ...interface{}) {
 	}
 	var pc [1]uintptr
 	_ = runtime.Callers(2, pc[:])
-	l.printf(LEVEL_FATAL, pc[0], format, v...)
+	l.printf(LEVEL_FATAL, pc[0], &format, v...)
 }
 
 // do print
 func (l *Logger) print(level Level, pc uintptr, v ...interface{}) {
-	log := NewLog(level, pc, nil, v, l.fields)
-	if l.name != nil {
-		log.Logger = *l.name
-	}
-	globalDriver.Print(log)
+	l.printf(level, pc, nil, v)
 }
 
 // do printf
-func (l *Logger) printf(level Level, pc uintptr, format string, v ...interface{}) {
-	log := NewLog(level, pc, &format, v, l.fields)
+func (l *Logger) printf(level Level, pc uintptr, format *string, v ...interface{}) {
+	log := NewLog(level, pc, format, v, l.fields)
 	if l.name != nil {
 		log.Logger = *l.name
 	}
+
+	// broadcast log to registered hooks
+	globalHooks.broadcast(log)
+
+	// let driver to print
 	globalDriver.Print(log)
 }
