@@ -25,11 +25,23 @@ TODO
 
 # Install
 
+Could use this command to install `slf4go`:
+
 ```bash
 go get github.com/go-eden/slf4go
 ```
 
+Could import `slf4go` like this:
+
+```go
+import (
+	log "github.com/go-eden/slf4go"
+)
+```
+
 # Usage
+
+TODO
 
 ## Use default logger
 
@@ -38,76 +50,46 @@ go get github.com/go-eden/slf4go
 In most case, you can use it directly, don't need any prepare.
 
 ```go
-Trace("are you prety?", true)
+package main
+
+import (
+	log "github.com/go-eden/slf4go"
+	"time"
+)
+
+func main() {
+	log.Debugf("debug time: %v", time.Now())
+	log.Warn("warn log")
+	log.Error("error log")
+	log.Panicf("panic time: %v", time.Now())
+}
 ``` 
+
+Result is this:
+
+```
+2019-06-16 19:35:05.167 [0] [TRACE] [main] default_example.go:12 debug time: 2019-06-16 19:35:05.167783 +0800 CST m=+0.000355435
+2019-06-16 19:35:05.168 [0] [ WARN] [main] default_example.go:15 warn log
+2019-06-16 19:35:05.168 [0] [ERROR] [main] default_example.go:17 error log
+2019-06-16 19:35:05.168 [0] [PANIC] [main] default_example.go:20 panic time: 2019-06-16 19:35:05.168064 +0800 CST m=+0.000636402
+goroutine 1 [running]:
+runtime/debug.Stack(0x10aab40, 0xc0000b4100, 0x1)
+	/usr/local/Cellar/go/1.12.6/libexec/src/runtime/debug/stack.go:24 +0x9d
+github.com/go-eden/slf4go.Panicf(0x10cfd89, 0xe, 0xc0000b40f0, 0x1, 0x1)
+	/Users/sulin/workspace/go-eden/slf4go/slf_core.go:191 +0x80
+main.main()
+	/Users/sulin/workspace/go-eden/slf4go/example/default_example.go:20 +0x213
+```
+
+Instructions: `panic` and `fatal` will print `goroutine` stack automatically.
 
 ## Custom Driver
 
-If you use native log or logrus, the code below shows you how it works.
+TODO
 
-If you use other logger frameworks, you need implement `LoggerFactory` by yourself.
+## Performance
 
-## Use native log as logger
-
-```go
-package main
-
-import (
-    "github.com/sisyphsu/slf4go"
-    "github.com/sisyphsu/slf4go/example/modules"
-)
-
-// doesn't need initialize
-
-// use slf4j everywhere
-func main() {
-    logger := slf4go.GetLogger("main")
-    logger.DebugF("I want %s", "Cycle Import")
-    logger.ErrorF("please support it, in %02d second!", 1)
-    modules.Login()
-}
-
-// just use slf4go everywhere, doesn't care aboud the implement.
-func Login() {
-    logger := slf4go.GetLogger("login")
-    logger.Info("do login")
-    logger.ErrorF("login result %s", "failed")
-}
-```
-
-## Use logrus as logger
-
-
-```go
-package main
-
-import (
-    log "github.com/sirupsen/logrus"
-    "os"
-    "github.com/sisyphsu/slf4go"
-    "github.com/sisyphsu/slf4go/adapter/logrus"
-)
-
-// initialize logger, just like `log4j.properties` or `logback.xml`
-func init() {
-    // Log as JSON instead of the default ASCII formatter.
-    log.SetFormatter(&log.JSONFormatter{})
-    // Output to stdout instead of the default stderr, could also be a file.
-    log.SetOutput(os.Stdout)
-    // Only log the warning severity or above.
-    log.SetLevel(log.WarnLevel)
-    logger := log.New()
-    // customize your root logger
-    slf4go.SetLoggerFactory(logrus.NewLoggerFactory(logger))
-}
-
-// use slf4go everywhere
-func main() {
-    logger := slf4go.GetLogger("main")
-    logger.DebugF("I want %s", "Cycle Import")
-    logger.ErrorF("please support it, in %02d second!", 1)
-}
-```
+TODO
 
 # Benefit
 
