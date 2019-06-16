@@ -1,13 +1,14 @@
-# SLF4GO
-Simple Logger Facade for Golang, inspired by SLF4J
+# Slf4go [![Build Status](https://travis-ci.org/go-eden/slf4go.svg?branch=master)](https://travis-ci.org/go-eden/slf4go)
 
-# What is SLF4GO
+Simple Logger Facade for Golang, inspired by `Slf4j`
+
+# What is Slf4go
 
 SLF4GO is not a logger framework like logrus, it doesn't have better logger implement. 
 
 But SLF4GO could be used for separating your business code from logger framework.
 
-# How SLF4GO does
+# How `Slf4go` works
 
 SLF4GO provides two interface, named `Logger` and `LoggerFactory`.
 
