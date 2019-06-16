@@ -13,7 +13,7 @@ var context string       // the process name
 var globalDriver Driver  // the log driver
 var globalLevel Level    // global lowest level, will cover all driver's configuration
 var globalLogger *Logger // global default logger
-var globalHooks = newHooks()
+var globalHook = newHooks()
 
 func init() {
 	exec := os.Args[0]
@@ -53,7 +53,7 @@ func SetLevel(l Level) {
 
 // RegisterHook register a hook, all log will inform it
 func RegisterHook(f func(*Log)) {
-	globalHooks.addHook(f)
+	globalHook.addHook(f)
 }
 
 // GetLogger create new Logger by caller's package name
@@ -86,7 +86,7 @@ func Tracef(format string, v ...interface{}) {
 	}
 	var pc [1]uintptr
 	_ = runtime.Callers(2, pc[:])
-	globalLogger.printf(LEVEL_TRACE, pc[0], &format, v...)
+	globalLogger.printf(LEVEL_TRACE, pc[0], format, v...)
 }
 
 // Debug record debug level's log
@@ -106,7 +106,7 @@ func Debugf(format string, v ...interface{}) {
 	}
 	var pc [1]uintptr
 	_ = runtime.Callers(2, pc[:])
-	globalLogger.printf(LEVEL_TRACE, pc[0], &format, v...)
+	globalLogger.printf(LEVEL_TRACE, pc[0], format, v...)
 }
 
 // Info record info level's log
@@ -126,7 +126,7 @@ func Infof(format string, v ...interface{}) {
 	}
 	var pc [1]uintptr
 	_ = runtime.Callers(2, pc[:])
-	globalLogger.printf(LEVEL_INFO, pc[0], &format, v...)
+	globalLogger.printf(LEVEL_INFO, pc[0], format, v...)
 }
 
 // Warn record warn level's log
@@ -146,7 +146,7 @@ func Warnf(format string, v ...interface{}) {
 	}
 	var pc [1]uintptr
 	_ = runtime.Callers(2, pc[:])
-	globalLogger.printf(LEVEL_WARN, pc[0], &format, v...)
+	globalLogger.printf(LEVEL_WARN, pc[0], format, v...)
 }
 
 // Error record error level's log
@@ -166,7 +166,7 @@ func Errorf(format string, v ...interface{}) {
 	}
 	var pc [1]uintptr
 	_ = runtime.Callers(2, pc[:])
-	globalLogger.printf(LEVEL_ERROR, pc[0], &format, v...)
+	globalLogger.printf(LEVEL_ERROR, pc[0], format, v...)
 }
 
 // Fatal record fatal level's log
@@ -186,5 +186,5 @@ func Fatalf(format string, v ...interface{}) {
 	}
 	var pc [1]uintptr
 	_ = runtime.Callers(2, pc[:])
-	globalLogger.printf(LEVEL_FATAL, pc[0], &format, v...)
+	globalLogger.printf(LEVEL_FATAL, pc[0], format, v...)
 }
