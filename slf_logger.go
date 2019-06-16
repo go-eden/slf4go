@@ -21,7 +21,11 @@ func (l *Logger) Name() string {
 
 // Level obtain logger's level, lower will not be print
 func (l *Logger) Level() Level {
-	return driver.GetLevel(*l.name)
+	r := globalDriver.GetLevel(*l.name)
+	if r < globalLevel {
+		r = globalLevel
+	}
+	return r
 }
 
 // BindFields add the specified fields into the current Logger.
@@ -37,38 +41,38 @@ func (l *Logger) WithFields(fields Fields) *Logger {
 }
 
 // Whether trace of current logger enabled or not
-func (l *Logger) IsEnableTrace() bool {
+func (l *Logger) IsTraceEnabled() bool {
 	return l.Level() <= LEVEL_TRACE
 }
 
 // Whether debug of current logger enabled or not
-func (l *Logger) IsEnableDebug() bool {
+func (l *Logger) IsDebugEnabled() bool {
 	return l.Level() <= LEVEL_DEBUG
 }
 
 // Whether info of current logger enabled or not
-func (l *Logger) IsEnableInfo() bool {
+func (l *Logger) IsInfoEnabled() bool {
 	return l.Level() <= LEVEL_INFO
 }
 
 // Whether warn of current logger enabled or not
-func (l *Logger) IsEnableWarn() bool {
+func (l *Logger) IsWarnEnabled() bool {
 	return l.Level() <= LEVEL_WARN
 }
 
 // Whether error of current logger enabled or not
-func (l *Logger) IsEnableError() bool {
+func (l *Logger) IsErrorEnabled() bool {
 	return l.Level() <= LEVEL_ERROR
 }
 
 // Whether fatal of current logger enabled or not
-func (l *Logger) IsEnableFatal() bool {
+func (l *Logger) IsFatalEnabled() bool {
 	return l.Level() <= LEVEL_FATAL
 }
 
 // Trace record trace level's log
 func (l *Logger) Trace(v ...interface{}) {
-	if driver.GetLevel(*l.name) > LEVEL_TRACE {
+	if !l.IsTraceEnabled() {
 		return // don't need log
 	}
 	var pc [1]uintptr
@@ -78,7 +82,7 @@ func (l *Logger) Trace(v ...interface{}) {
 
 // Tracef record trace level's log with custom format.
 func (l *Logger) Tracef(format string, v ...interface{}) {
-	if driver.GetLevel(*l.name) > LEVEL_TRACE {
+	if !l.IsTraceEnabled() {
 		return // don't need log
 	}
 	var pc [1]uintptr
@@ -88,7 +92,7 @@ func (l *Logger) Tracef(format string, v ...interface{}) {
 
 // Debug record debug level's log
 func (l *Logger) Debug(v ...interface{}) {
-	if driver.GetLevel(*l.name) > LEVEL_DEBUG {
+	if !l.IsDebugEnabled() {
 		return // don't need log
 	}
 	var pc [1]uintptr
@@ -98,7 +102,7 @@ func (l *Logger) Debug(v ...interface{}) {
 
 // Debugf record debug level's log with custom format.
 func (l *Logger) Debugf(format string, v ...interface{}) {
-	if driver.GetLevel(*l.name) > LEVEL_DEBUG {
+	if !l.IsDebugEnabled() {
 		return // don't need log
 	}
 	var pc [1]uintptr
@@ -108,7 +112,7 @@ func (l *Logger) Debugf(format string, v ...interface{}) {
 
 // Info record info level's log
 func (l *Logger) Info(v ...interface{}) {
-	if driver.GetLevel(*l.name) > LEVEL_INFO {
+	if !l.IsInfoEnabled() {
 		return // don't need log
 	}
 	var pc [1]uintptr
@@ -118,7 +122,7 @@ func (l *Logger) Info(v ...interface{}) {
 
 // Infof record info level's log with custom format.
 func (l *Logger) Infof(format string, v ...interface{}) {
-	if driver.GetLevel(*l.name) > LEVEL_INFO {
+	if !l.IsInfoEnabled() {
 		return // don't need log
 	}
 	var pc [1]uintptr
@@ -128,7 +132,7 @@ func (l *Logger) Infof(format string, v ...interface{}) {
 
 // Warn record warn level's log
 func (l *Logger) Warn(v ...interface{}) {
-	if driver.GetLevel(*l.name) > LEVEL_WARN {
+	if !l.IsWarnEnabled() {
 		return // don't need log
 	}
 	var pc [1]uintptr
@@ -138,7 +142,7 @@ func (l *Logger) Warn(v ...interface{}) {
 
 // Warnf record warn level's log with custom format.
 func (l *Logger) Warnf(format string, v ...interface{}) {
-	if driver.GetLevel(*l.name) > LEVEL_WARN {
+	if !l.IsWarnEnabled() {
 		return // don't need log
 	}
 	var pc [1]uintptr
@@ -148,7 +152,7 @@ func (l *Logger) Warnf(format string, v ...interface{}) {
 
 // Error record error level's log
 func (l *Logger) Error(v ...interface{}) {
-	if driver.GetLevel(*l.name) > LEVEL_ERROR {
+	if !l.IsErrorEnabled() {
 		return // don't need log
 	}
 	var pc [1]uintptr
@@ -158,7 +162,7 @@ func (l *Logger) Error(v ...interface{}) {
 
 // Errorf record error level's log with custom format.
 func (l *Logger) Errorf(format string, v ...interface{}) {
-	if driver.GetLevel(*l.name) > LEVEL_ERROR {
+	if !l.IsErrorEnabled() {
 		return // don't need log
 	}
 	var pc [1]uintptr
@@ -168,7 +172,7 @@ func (l *Logger) Errorf(format string, v ...interface{}) {
 
 // Fatal record fatal level's log
 func (l *Logger) Fatal(v ...interface{}) {
-	if driver.GetLevel(*l.name) > LEVEL_FATAL {
+	if !l.IsFatalEnabled() {
 		return // don't need log
 	}
 	var pc [1]uintptr
@@ -178,7 +182,7 @@ func (l *Logger) Fatal(v ...interface{}) {
 
 // Fatalf record fatal level's log with custom format.
 func (l *Logger) Fatalf(format string, v ...interface{}) {
-	if driver.GetLevel(*l.name) > LEVEL_FATAL {
+	if !l.IsFatalEnabled() {
 		return // don't need log
 	}
 	var pc [1]uintptr
@@ -193,7 +197,7 @@ func (l *Logger) print(level Level, pc uintptr, v ...interface{}) {
 		log.Logger = *l.name
 	}
 	log.Fields = l.fields
-	driver.Print(log)
+	globalDriver.Print(log)
 }
 
 // do printf
@@ -203,5 +207,5 @@ func (l *Logger) printf(level Level, pc uintptr, format string, v ...interface{}
 		log.Logger = *l.name
 	}
 	log.Fields = l.fields
-	driver.Print(log)
+	globalDriver.Print(log)
 }
