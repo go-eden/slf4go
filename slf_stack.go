@@ -11,24 +11,24 @@ import (
 var stackLock = new(sync.Mutex)
 var stackCache = new(atomic.Value)
 
-// stackInfo represent pc's stack details.
-type stackInfo struct {
+// Stack represent pc's stack details.
+type Stack struct {
 	pc       uintptr
-	pkgName  string
-	fileName string
-	funcName string
-	line     int
+	Package  string `json:"package"`
+	Filename string `json:"filename"`
+	Function string `json:"function"`
+	Line     int    `json:"line"`
 }
 
 // cacheStack save the specified stachInfo into global atomic map.
-func cacheStack(s *stackInfo) {
+func cacheStack(s *Stack) {
 	stackLock.Lock()
 	defer stackLock.Unlock()
-	var oldMap map[uintptr]*stackInfo
+	var oldMap map[uintptr]*Stack
 	if x := stackCache.Load(); x != nil {
-		oldMap = x.(map[uintptr]*stackInfo)
+		oldMap = x.(map[uintptr]*Stack)
 	}
-	newMap := make(map[uintptr]*stackInfo)
+	newMap := make(map[uintptr]*Stack)
 	if oldMap != nil {
 		for k, v := range oldMap {
 			newMap[k] = v
@@ -38,24 +38,24 @@ func cacheStack(s *stackInfo) {
 	stackCache.Store(newMap)
 }
 
-// loadStack retrieve cached stackInfo, could be nil
-func loadStack(pc uintptr) *stackInfo {
+// loadStack retrieve cached Stack, could be nil
+func loadStack(pc uintptr) *Stack {
 	x := stackCache.Load()
 	if x == nil {
 		return nil
 	}
-	infoMap := x.(map[uintptr]*stackInfo)
+	infoMap := x.(map[uintptr]*Stack)
 
 	return infoMap[pc]
 }
 
 // parseStack retrieve pc's stack info
-func parseStack(pc uintptr) (s *stackInfo) {
+func parseStack(pc uintptr) (s *Stack) {
 	var frame runtime.Frame
 	if frames := runtime.CallersFrames([]uintptr{pc}); frames != nil {
 		frame, _ = frames.Next()
 	}
-	s = &stackInfo{pc: pc, line: frame.Line}
+	s = &Stack{pc: pc, Line: frame.Line}
 	// parse package and function
 	var pkgName, funcName string
 	if frame.Func != nil {
@@ -78,19 +78,19 @@ func parseStack(pc uintptr) (s *stackInfo) {
 			pkgName = name
 		}
 	}
-	s.pkgName = pkgName
-	s.funcName = funcName
-	// parse fileName
+	s.Package = pkgName
+	s.Function = funcName
+	// parse Filename
 	var fileName = frame.File
 	if off := strings.LastIndexByte(fileName, '/'); off > 0 && off < len(fileName)-1 {
 		fileName = fileName[off+1:]
 	}
-	s.fileName = fileName
+	s.Filename = fileName
 	return
 }
 
 // ParseStack retrieve pc's stack details, should cache result for performance optimization.
-func ParseStack(pc uintptr) (s *stackInfo) {
+func ParseStack(pc uintptr) (s *Stack) {
 	if s = loadStack(pc); s != nil {
 		return
 	}

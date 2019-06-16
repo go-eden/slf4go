@@ -35,6 +35,11 @@ func SetContext(name string) {
 	context = name
 }
 
+// GetContext obtain the global context name
+func GetContext() string {
+	return context
+}
+
 // SetDriver update the global log driver
 func SetDriver(d Driver) {
 	globalDriver = d
@@ -50,7 +55,7 @@ func GetLogger() *Logger {
 	var pc [1]uintptr
 	_ = runtime.Callers(2, pc[:])
 	s := ParseStack(pc[0])
-	return newLogger(&s.pkgName)
+	return newLogger(&s.Package)
 }
 
 // NewLogger create new Logger by the specified name

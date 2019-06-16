@@ -57,17 +57,12 @@ func (l Level) String() string {
 
 // Log represent an log, contains all properties.
 type Log struct {
-	Uptime  int64  `json:"uptime"`  // time(ms) elapsed since started
-	Time    int64  `json:"date"`    // log's time(ms)
-	Context string `json:"context"` // log's context name, like application name
-	Logger  string `json:"logger"`  // log's name, default is package
+	Time   int64  `json:"date"`   // log's time(ms)
+	Logger string `json:"logger"` // log's name, default is package
 
-	Pid      int    `json:"pid"`      // the process id which generated this log
-	Gid      int    `json:"gid"`      // the goroutine id which generated this log
-	Package  string `json:"package"`  // the package-name which generated this log
-	Filename string `json:"filename"` // the file-name which generated this log
-	Function string `json:"function"` // the function-name which generated this log
-	Line     int    `json:"line"`     // the line-number which generated this log
+	Pid   int    `json:"pid"`   // the process id which generated this log
+	Gid   int    `json:"gid"`   // the goroutine id which generated this log
+	Stack *Stack `json:"stack"` // the stack info of this log
 
 	Level  Level         `json:"level"`  // log's level
 	Format *string       `json:"format"` // log's format
@@ -77,26 +72,26 @@ type Log struct {
 
 // Create an new Log instance
 // for better performance, caller should be provided by upper
-func NewLog(level Level, pc uintptr, format *string, args []interface{}) *Log {
+func NewLog(level Level, pc uintptr, format *string, args []interface{}, fields Fields) *Log {
 	stack := ParseStack(pc)
-	nowUs := now() // cost 40ns
 	return &Log{
-		Time:    nowUs,
-		Uptime:  nowUs - startTime,
-		Context: context,
-		Logger:  stack.pkgName,
+		Time:   now(),
+		Logger: stack.Package,
 
-		Pid:      pid,
-		Gid:      int(tls.ID()),
-		Package:  stack.pkgName,
-		Filename: stack.fileName,
-		Function: stack.funcName,
-		Line:     stack.line,
+		Pid:   pid,
+		Gid:   int(tls.ID()),
+		Stack: stack,
 
 		Level:  level,
 		Format: format,
 		Args:   args,
+		Fields: fields,
 	}
+}
+
+// Uptime obtain log's createTime relative to application's startTime
+func (l *Log) Uptime() int64 {
+	return l.Time - startTime
 }
 
 // Obtain current microsecond, use syscall for better performance

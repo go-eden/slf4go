@@ -40,7 +40,7 @@ func (p *StdDriver) Print(l *Log) {
 	} else {
 		msg = fmt.Sprint(l.Args...)
 	}
-	result := fmt.Sprintf("%s [%d] [%5s] [%s] %s:%d %s\n", ts, l.Gid, l.Level.String(), l.Logger, l.Filename, l.Line, msg)
+	result := fmt.Sprintf("%s [%d] [%5s] [%s] %s:%d %s\n", ts, l.Gid, l.Level.String(), l.Logger, l.Stack.Filename, l.Stack.Line, msg)
 	_, _ = os.Stdout.Write([]byte(result))
 }
 

@@ -45,7 +45,7 @@ func BenchmarkPid(b *testing.B) {
 func TestNewLog(t *testing.T) {
 	var pc [1]uintptr
 	_ = runtime.Callers(2, pc[:])
-	l := NewLog(LEVEL_TRACE, pc[0], nil, nil)
+	l := NewLog(LEVEL_TRACE, pc[0], nil, nil, nil)
 	t.Log(l)
 }
 
@@ -54,13 +54,15 @@ func TestNewLog(t *testing.T) {
 // BenchmarkNewLog-12    	 2000000	       720 ns/op	     392 B/op	       4 allocs/op
 // after optimization by ParseStack
 // BenchmarkNewLog-12    	 5000000	       387 ns/op	     176 B/op	       1 allocs/op
+// BenchmarkNewLog-12    	 5000000	       376 ns/op	     160 B/op	       1 allocs/op
+// BenchmarkNewLog-12    	 5000000	       363 ns/op	      96 B/op	       1 allocs/op
 func BenchmarkNewLog(b *testing.B) {
 	var pc [1]uintptr
 	b.ReportAllocs()
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		_ = runtime.Callers(2, pc[:])
-		NewLog(LEVEL_TRACE, pc[0], nil, nil)
+		NewLog(LEVEL_TRACE, pc[0], nil, nil, nil)
 	}
 }
 

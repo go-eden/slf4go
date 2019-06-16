@@ -23,7 +23,7 @@ func TestNilDriver(t *testing.T) {
 	log.Info("what???")
 }
 
-// BenchmarkLogger-12    	 3000000	       446 ns/op	     192 B/op	       2 allocs/op
+// BenchmarkLogger-12    	 3000000	       415 ns/op	     112 B/op	       2 allocs/op
 func BenchmarkLogger(b *testing.B) {
 	SetDriver(new(NilDriver))
 
@@ -35,7 +35,7 @@ func BenchmarkLogger(b *testing.B) {
 	}
 }
 
-// BenchmarkDefaultLogger-12    	 3000000	       448 ns/op	     192 B/op	       2 allocs/op
+// BenchmarkDefaultLogger-12    	 3000000	       417 ns/op	     112 B/op	       2 allocs/op
 func BenchmarkDefaultLogger(b *testing.B) {
 	SetDriver(new(NilDriver))
 

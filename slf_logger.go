@@ -192,20 +192,18 @@ func (l *Logger) Fatalf(format string, v ...interface{}) {
 
 // do print
 func (l *Logger) print(level Level, pc uintptr, v ...interface{}) {
-	log := NewLog(level, pc, nil, v)
+	log := NewLog(level, pc, nil, v, l.fields)
 	if l.name != nil {
 		log.Logger = *l.name
 	}
-	log.Fields = l.fields
 	globalDriver.Print(log)
 }
 
 // do printf
 func (l *Logger) printf(level Level, pc uintptr, format string, v ...interface{}) {
-	log := NewLog(level, pc, &format, v)
+	log := NewLog(level, pc, &format, v, l.fields)
 	if l.name != nil {
 		log.Logger = *l.name
 	}
-	log.Fields = l.fields
 	globalDriver.Print(log)
 }
