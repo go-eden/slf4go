@@ -41,9 +41,7 @@ import (
 
 # Usage
 
-`Slf4go` wrapped a global default logger.
-
-In most case, you can use it directly, don't need any prepare.
+`Slf4go` provided a global default logger by default, in most case, you can use it directly, don't need any other operation.
 
 ```go
 package main
