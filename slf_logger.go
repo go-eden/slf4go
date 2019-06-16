@@ -205,7 +205,8 @@ func (l *Logger) Fatal(v ...interface{}) {
 	}
 	var pc [1]uintptr
 	_ = runtime.Callers(2, pc[:])
-	l.print(LEVEL_FATAL, pc[0], nil, v...)
+	stack := string(debug.Stack())
+	l.print(LEVEL_FATAL, pc[0], &stack, v...)
 }
 
 // Fatalf record fatal level's log with custom format.
