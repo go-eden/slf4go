@@ -60,7 +60,7 @@ func (l Level) String() string {
 
 // Log represent an log, contains all properties.
 type Log struct {
-	Time   int64  `json:"date"`   // log's time(ms)
+	Time   int64  `json:"date"`   // log's time(us)
 	Logger string `json:"logger"` // log's name, default is package
 
 	Pid        int     `json:"pid"`         // the process id which generated this log

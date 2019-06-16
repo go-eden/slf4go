@@ -41,10 +41,6 @@ import (
 
 # Usage
 
-TODO
-
-## Use default logger
-
 `Slf4go` wrapped a global default logger.
 
 In most case, you can use it directly, don't need any prepare.
@@ -83,11 +79,63 @@ main.main()
 
 Notice: `panic` and `fatal` will print `goroutine` stack automatically.
 
-## Custom Driver
+You cal also create your own logger for other purposes:
+
+```go
+log1 := log.GetLogger()
+log1.Info("hello")
+log2 := log.NewLogger("anyname")
+log2.Info("world")
+```
+
+# Custom Driver
 
 TODO
 
-## Performance
+## Introduce `Log`
+
+`Logger` will collect all required infomation into `Log` instance, `Driver` should print or store it as need.
+
+The structure is like:
+
+```go
+type Log struct {
+	Time   int64  `json:"date"`   // log's time(us)
+	Logger string `json:"logger"` // log's name, default is package
+
+	Pid        int     `json:"pid"`         // the process id which generated this log
+	Gid        int     `json:"gid"`         // the goroutine id which generated this log
+	Stack      *Stack  `json:"stack"`       // the stack info of this log
+	DebugStack *string `json:"debug_stack"` // the debug stack of this log
+
+	Level  Level         `json:"level"`  // log's level
+	Format *string       `json:"format"` // log's format
+	Args   []interface{} `json:"args"`   // log's format args
+	Fields Fields        `json:"fields"` // additional custom fields
+}
+``` 
+
+## Default StdDriver
+
+By default, `Slf4go` provide a `StdDriver` as fallback, it will format `Log` and print it into `stdout` directly.
+
+If you don't need other features, you could use it directly.
+
+## Use `slf4go-classic`
+
+TODO
+
+## Use `logrus`
+
+TODO
+
+## Provide your own driver
+
+TODO
+
+# Custom Hook
+
+# Performance
 
 TODO
 
