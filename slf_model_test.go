@@ -1,4 +1,4 @@
-package xlog
+package log
 
 import (
 	"github.com/huandu/go-tls"

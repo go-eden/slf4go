@@ -1,4 +1,4 @@
-package xlog
+package log
 
 import (
 	"os"
@@ -199,7 +199,8 @@ func Fatal(v ...interface{}) {
 	}
 	var pc [1]uintptr
 	_ = runtime.Callers(2, pc[:])
-	globalLogger.print(LEVEL_FATAL, pc[0], nil, v...)
+	stack := string(debug.Stack())
+	globalLogger.print(LEVEL_FATAL, pc[0], &stack, v...)
 }
 
 // Fatalf record fatal level's log with custom format.
@@ -209,5 +210,6 @@ func Fatalf(format string, v ...interface{}) {
 	}
 	var pc [1]uintptr
 	_ = runtime.Callers(2, pc[:])
-	globalLogger.printf(LEVEL_FATAL, pc[0], nil, format, v...)
+	stack := string(debug.Stack())
+	globalLogger.printf(LEVEL_FATAL, pc[0], &stack, format, v...)
 }

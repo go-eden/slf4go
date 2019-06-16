@@ -1,4 +1,4 @@
-package xlog
+package log
 
 import (
 	"fmt"
@@ -33,7 +33,7 @@ func (p *StdDriver) Name() string {
 func (p *StdDriver) Print(l *Log) {
 	p.Lock()
 	defer p.Unlock()
-	var ts = time.Unix(0, l.Time).Format("2006-01-02 15:04:05.999")
+	var ts = time.Unix(0, l.Time*1000).Format("2006-01-02 15:04:05.999")
 	var msg string
 	if l.Format != nil {
 		msg = fmt.Sprintf(*l.Format, l.Args...)

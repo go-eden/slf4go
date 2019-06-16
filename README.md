@@ -7,44 +7,45 @@ Simple Logger Facade for Golang, inspired by `Slf4j`, it forced on performance a
 `Slf4go` is different with other librarys like `logrus`/`zap`, it is more like a log specification. 
 
 `Slf4go` have several components:
+
 + `log`: Log record's structure, contains `Time`, `Logger`, `Pid`, `Gid`, `Stack`, `Fields`, etc.
-+ `logger`: Provide api like `Trace`, `Debug`, `Info`, `Warn`, `Error`, `Fatal`, etc.
++ `logger`: Provide api for `Trace`, `Debug`, `Info`, `Warn`, `Error`, `Panic`, `Fatal`.
 + `driver`: It's an interface, used for decoupling `Api` and `Implementation`.
 + `hook`: Provide a hook feature, can be used for log's async hook.
 
-For better understanding, check this structure chart.
+For better understanding, check this chart.
 
+![structure](./doc/structure.jpg)
 
+`Slf4go` doesn't conflict with other library, thanks to `Driver` interface, `Slf4go` can working on top of `logrus`/`zap`etc. 
 
+# Features
 
-But SLF4GO could be used for separating your business code from logger framework.
+TODO
 
-# How `Slf4go` works
+# Install
 
-SLF4GO provides two interface, named `Logger` and `LoggerFactory`.
-
-`LoggerFactory` used for adapting your logger framework.
-
-`Logger` used as log operation standard API, like `Trace`, `Debug`, `Info`, `Warn`, `Error`, 
-all log methods of your logger framework need be wrapped by `Logger`.
-
-SLF4GO support logrus/log by default, you can use them directly.
-
-After above steps, 
-You can customize any logger framework as your what, 
-and then you need adapt it as a `LoggerFactory`, make it as the global LoggerFactory by `slf4go.SetLoggerFactory`.
+```bash
+go get github.com/go-eden/slf4go
+```
 
 # Usage
+
+## Use default logger
+
+`Slf4go` wrapped a global default logger.
+
+In most case, you can use it directly, don't need any prepare.
+
+```go
+Trace("are you prety?", true)
+``` 
+
+## Custom Driver
 
 If you use native log or logrus, the code below shows you how it works.
 
 If you use other logger frameworks, you need implement `LoggerFactory` by yourself.
-
-## Install
-
-```bash
-go get github.com/sisyphsu/slf4go
-```
 
 ## Use native log as logger
 
