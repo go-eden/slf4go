@@ -69,14 +69,15 @@ type Log struct {
 	Function string `json:"function"` // the function-name which generated this log
 	Line     int    `json:"line"`     // the line-number which generated this log
 
-	Level  Level  `json:"level"`  // log's level
-	Msg    string `json:"msg"`    // log's message
-	Fields Fields `json:"fields"` // additional custom fields
+	Level  Level         `json:"level"`  // log's level
+	Format *string       `json:"format"` // log's format
+	Args   []interface{} `json:"args"`   // log's format args
+	Fields Fields        `json:"fields"` // additional custom fields
 }
 
 // Create an new Log instance
 // for better performance, caller should be provided by upper
-func NewLog(level Level, pc uintptr, msg string) *Log {
+func NewLog(level Level, pc uintptr, format *string, args []interface{}) *Log {
 	stack := ParseStack(pc)
 	now := time.Now().UnixNano() // cost 80ns
 	return &Log{
@@ -92,7 +93,8 @@ func NewLog(level Level, pc uintptr, msg string) *Log {
 		Function: stack.funcName,
 		Line:     stack.line,
 
-		Level: level,
-		Msg:   msg,
+		Level:  level,
+		Format: format,
+		Args:   args,
 	}
 }

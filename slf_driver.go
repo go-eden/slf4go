@@ -34,7 +34,13 @@ func (p *StdDriver) Print(l *Log) {
 	p.Lock()
 	defer p.Unlock()
 	var ts = time.Unix(0, l.Time).Format("2006-01-02 15:04:05.999")
-	result := fmt.Sprintf("%s [%d] [%5s] [%s] %s:%d %s\n", ts, l.Gid, l.Level.String(), l.Logger, l.Filename, l.Line, l.Msg)
+	var msg string
+	if l.Format != nil {
+		msg = fmt.Sprintf(*l.Format, l.Args...)
+	} else {
+		msg = fmt.Sprint(l.Args...)
+	}
+	result := fmt.Sprintf("%s [%d] [%5s] [%s] %s:%d %s\n", ts, l.Gid, l.Level.String(), l.Logger, l.Filename, l.Line, msg)
 	_, _ = os.Stdout.Write([]byte(result))
 }
 

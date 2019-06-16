@@ -1,7 +1,6 @@
 package xlog
 
 import (
-	"fmt"
 	"runtime"
 )
 
@@ -189,16 +188,16 @@ func (l *Logger) Fatalf(format string, v ...interface{}) {
 
 // do print
 func (l *Logger) print(level Level, pc uintptr, v ...interface{}) {
-	msg := fmt.Sprint(v...)
-	log := NewLog(level, pc, msg)
+	log := NewLog(level, pc, nil, v)
 	log.Logger = l.name
+	log.Fields = l.fields
 	driver.Print(log)
 }
 
 // do printf
 func (l *Logger) printf(level Level, pc uintptr, format string, v ...interface{}) {
-	msg := fmt.Sprintf(format, v...)
-	log := NewLog(level, pc, msg)
+	log := NewLog(level, pc, &format, v)
 	log.Logger = l.name
+	log.Fields = l.fields
 	driver.Print(log)
 }
