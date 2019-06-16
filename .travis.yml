@@ -1,0 +1,6 @@
+language: go
+go: [ 1.12.x ]
+script:
+  - export GOMAXPROCS=4
+  - export GORACE=halt_on_error=1
+  - go test -race -v ./...
