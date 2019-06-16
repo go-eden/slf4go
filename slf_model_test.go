@@ -45,7 +45,7 @@ func BenchmarkPid(b *testing.B) {
 func TestNewLog(t *testing.T) {
 	var pc [1]uintptr
 	_ = runtime.Callers(2, pc[:])
-	l := NewLog(LEVEL_TRACE, pc[0], nil, nil, nil)
+	l := NewLog(LEVEL_TRACE, pc[0], nil, nil, nil, nil)
 	t.Log(l)
 }
 
@@ -62,7 +62,7 @@ func BenchmarkNewLog(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		_ = runtime.Callers(2, pc[:])
-		NewLog(LEVEL_TRACE, pc[0], nil, nil, nil)
+		NewLog(LEVEL_TRACE, pc[0], nil, nil, nil, nil)
 	}
 }
 

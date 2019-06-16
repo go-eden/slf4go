@@ -2,6 +2,7 @@ package xlog
 
 import (
 	"runtime"
+	"runtime/debug"
 )
 
 // Logger wrap independent logger
@@ -65,6 +66,11 @@ func (l *Logger) IsErrorEnabled() bool {
 	return l.Level() <= LEVEL_ERROR
 }
 
+// Whether panic of current logger enabled or not
+func (l *Logger) IsPanicEnabled() bool {
+	return l.Level() <= LEVEL_PANIC
+}
+
 // Whether fatal of current logger enabled or not
 func (l *Logger) IsFatalEnabled() bool {
 	return l.Level() <= LEVEL_FATAL
@@ -77,7 +83,7 @@ func (l *Logger) Trace(v ...interface{}) {
 	}
 	var pc [1]uintptr
 	_ = runtime.Callers(2, pc[:])
-	l.print(LEVEL_TRACE, pc[0], v...)
+	l.print(LEVEL_TRACE, pc[0], nil, v...)
 }
 
 // Tracef record trace level's log with custom format.
@@ -87,7 +93,7 @@ func (l *Logger) Tracef(format string, v ...interface{}) {
 	}
 	var pc [1]uintptr
 	_ = runtime.Callers(2, pc[:])
-	l.printf(LEVEL_TRACE, pc[0], format, v...)
+	l.printf(LEVEL_TRACE, pc[0], nil, format, v...)
 }
 
 // Debug record debug level's log
@@ -97,7 +103,7 @@ func (l *Logger) Debug(v ...interface{}) {
 	}
 	var pc [1]uintptr
 	_ = runtime.Callers(2, pc[:])
-	l.print(LEVEL_DEBUG, pc[0], v...)
+	l.print(LEVEL_DEBUG, pc[0], nil, v...)
 }
 
 // Debugf record debug level's log with custom format.
@@ -107,7 +113,7 @@ func (l *Logger) Debugf(format string, v ...interface{}) {
 	}
 	var pc [1]uintptr
 	_ = runtime.Callers(2, pc[:])
-	l.printf(LEVEL_DEBUG, pc[0], format, v...)
+	l.printf(LEVEL_DEBUG, pc[0], nil, format, v...)
 }
 
 // Info record info level's log
@@ -117,7 +123,7 @@ func (l *Logger) Info(v ...interface{}) {
 	}
 	var pc [1]uintptr
 	_ = runtime.Callers(2, pc[:])
-	l.print(LEVEL_INFO, pc[0], v...)
+	l.print(LEVEL_INFO, pc[0], nil, v...)
 }
 
 // Infof record info level's log with custom format.
@@ -127,7 +133,7 @@ func (l *Logger) Infof(format string, v ...interface{}) {
 	}
 	var pc [1]uintptr
 	_ = runtime.Callers(2, pc[:])
-	l.printf(LEVEL_INFO, pc[0], format, v...)
+	l.printf(LEVEL_INFO, pc[0], nil, format, v...)
 }
 
 // Warn record warn level's log
@@ -137,7 +143,7 @@ func (l *Logger) Warn(v ...interface{}) {
 	}
 	var pc [1]uintptr
 	_ = runtime.Callers(2, pc[:])
-	l.print(LEVEL_WARN, pc[0], v...)
+	l.print(LEVEL_WARN, pc[0], nil, v...)
 }
 
 // Warnf record warn level's log with custom format.
@@ -147,7 +153,7 @@ func (l *Logger) Warnf(format string, v ...interface{}) {
 	}
 	var pc [1]uintptr
 	_ = runtime.Callers(2, pc[:])
-	l.printf(LEVEL_WARN, pc[0], format, v...)
+	l.printf(LEVEL_WARN, pc[0], nil, format, v...)
 }
 
 // Error record error level's log
@@ -157,7 +163,7 @@ func (l *Logger) Error(v ...interface{}) {
 	}
 	var pc [1]uintptr
 	_ = runtime.Callers(2, pc[:])
-	l.print(LEVEL_ERROR, pc[0], v...)
+	l.print(LEVEL_ERROR, pc[0], nil, v...)
 }
 
 // Errorf record error level's log with custom format.
@@ -167,7 +173,29 @@ func (l *Logger) Errorf(format string, v ...interface{}) {
 	}
 	var pc [1]uintptr
 	_ = runtime.Callers(2, pc[:])
-	l.printf(LEVEL_ERROR, pc[0], format, v...)
+	l.printf(LEVEL_ERROR, pc[0], nil, format, v...)
+}
+
+// Panic record panic level's log
+func (l *Logger) Panic(v ...interface{}) {
+	if !l.IsPanicEnabled() {
+		return // don't need log
+	}
+	var pc [1]uintptr
+	_ = runtime.Callers(2, pc[:])
+	stack := string(debug.Stack())
+	l.print(LEVEL_FATAL, pc[0], &stack, v...)
+}
+
+// Panic record panic level's log with custom format
+func (l *Logger) Panicf(format string, v ...interface{}) {
+	if !l.IsPanicEnabled() {
+		return // don't need log
+	}
+	var pc [1]uintptr
+	_ = runtime.Callers(2, pc[:])
+	stack := string(debug.Stack())
+	l.printf(LEVEL_ERROR, pc[0], &stack, format, v...)
 }
 
 // Fatal record fatal level's log
@@ -177,7 +205,7 @@ func (l *Logger) Fatal(v ...interface{}) {
 	}
 	var pc [1]uintptr
 	_ = runtime.Callers(2, pc[:])
-	l.print(LEVEL_FATAL, pc[0], v...)
+	l.print(LEVEL_FATAL, pc[0], nil, v...)
 }
 
 // Fatalf record fatal level's log with custom format.
@@ -187,12 +215,13 @@ func (l *Logger) Fatalf(format string, v ...interface{}) {
 	}
 	var pc [1]uintptr
 	_ = runtime.Callers(2, pc[:])
-	l.printf(LEVEL_FATAL, pc[0], format, v...)
+	stack := string(debug.Stack())
+	l.printf(LEVEL_FATAL, pc[0], &stack, format, v...)
 }
 
 // do print
-func (l *Logger) print(level Level, pc uintptr, v ...interface{}) {
-	log := NewLog(level, pc, nil, v, l.fields)
+func (l *Logger) print(level Level, pc uintptr, stack *string, v ...interface{}) {
+	log := NewLog(level, pc, stack, nil, v, l.fields)
 	if l.name != nil {
 		log.Logger = *l.name
 	}
@@ -201,8 +230,8 @@ func (l *Logger) print(level Level, pc uintptr, v ...interface{}) {
 }
 
 // do printf
-func (l *Logger) printf(level Level, pc uintptr, format string, v ...interface{}) {
-	log := NewLog(level, pc, &format, v, l.fields)
+func (l *Logger) printf(level Level, pc uintptr, stack *string, format string, v ...interface{}) {
+	log := NewLog(level, pc, stack, &format, v, l.fields)
 	if l.name != nil {
 		log.Logger = *l.name
 	}

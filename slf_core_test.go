@@ -20,6 +20,7 @@ func TestGetLogger(t *testing.T) {
 	log.Errorf("what?..$%s$", "XD")
 	log.Fatalf("import cycle not allowed! %s", "shit...")
 	log.Fatal("never reach here")
+	log.Panic("panic...")
 	time.Sleep(time.Millisecond * 10)
 }
 

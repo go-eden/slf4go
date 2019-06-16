@@ -32,6 +32,7 @@ const (
 	LEVEL_INFO
 	LEVEL_WARN
 	LEVEL_ERROR
+	LEVEL_PANIC
 	LEVEL_FATAL
 )
 
@@ -48,6 +49,8 @@ func (l Level) String() string {
 		return "WARN"
 	case LEVEL_ERROR:
 		return "ERROR"
+	case LEVEL_PANIC:
+		return "PANIC"
 	case LEVEL_FATAL:
 		return "FATAL"
 	default:
@@ -60,9 +63,10 @@ type Log struct {
 	Time   int64  `json:"date"`   // log's time(ms)
 	Logger string `json:"logger"` // log's name, default is package
 
-	Pid   int    `json:"pid"`   // the process id which generated this log
-	Gid   int    `json:"gid"`   // the goroutine id which generated this log
-	Stack *Stack `json:"stack"` // the stack info of this log
+	Pid        int     `json:"pid"`         // the process id which generated this log
+	Gid        int     `json:"gid"`         // the goroutine id which generated this log
+	Stack      *Stack  `json:"stack"`       // the stack info of this log
+	DebugStack *string `json:"debug_stack"` // the debug stack of this log
 
 	Level  Level         `json:"level"`  // log's level
 	Format *string       `json:"format"` // log's format
@@ -72,15 +76,16 @@ type Log struct {
 
 // Create an new Log instance
 // for better performance, caller should be provided by upper
-func NewLog(level Level, pc uintptr, format *string, args []interface{}, fields Fields) *Log {
+func NewLog(level Level, pc uintptr, debugStack *string, format *string, args []interface{}, fields Fields) *Log {
 	stack := ParseStack(pc)
 	return &Log{
 		Time:   now(),
 		Logger: stack.Package,
 
-		Pid:   pid,
-		Gid:   int(tls.ID()),
-		Stack: stack,
+		Pid:        pid,
+		Gid:        int(tls.ID()),
+		Stack:      stack,
+		DebugStack: debugStack,
 
 		Level:  level,
 		Format: format,

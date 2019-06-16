@@ -1,10 +1,21 @@
 # Slf4go [![Build Status](https://travis-ci.org/go-eden/slf4go.svg?branch=master)](https://travis-ci.org/go-eden/slf4go)
 
-Simple Logger Facade for Golang, inspired by `Slf4j`
+Simple Logger Facade for Golang, inspired by `Slf4j`, it forced on performance and scalability.
 
-# What is Slf4go
+# Introduction
 
-SLF4GO is not a logger framework like logrus, it doesn't have better logger implement. 
+`Slf4go` is different with other librarys like `logrus`/`zap`, it is more like a log specification. 
+
+`Slf4go` have several components:
++ `log`: Log record's structure, contains `Time`, `Logger`, `Pid`, `Gid`, `Stack`, `Fields`, etc.
++ `logger`: Provide api like `Trace`, `Debug`, `Info`, `Warn`, `Error`, `Fatal`, etc.
++ `driver`: It's an interface, used for decoupling `Api` and `Implementation`.
++ `hook`: Provide a hook feature, can be used for log's async hook.
+
+For better understanding, check this structure chart.
+
+
+
 
 But SLF4GO could be used for separating your business code from logger framework.
 
