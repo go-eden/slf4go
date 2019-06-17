@@ -37,6 +37,7 @@ func TestDefaultLogger(t *testing.T) {
 	Info("what?")
 	Error("what?")
 	Errorf("what?..$%s$", "XD")
+	Panic("panic")
 	Fatalf("import cycle not allowed! %s", "shit...")
 	Fatal("never reach here")
 }

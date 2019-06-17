@@ -1,6 +1,7 @@
 package log
 
 import (
+	"github.com/go-eden/etime"
 	"github.com/huandu/go-tls"
 	"strconv"
 	"syscall"
@@ -79,7 +80,7 @@ type Log struct {
 func NewLog(level Level, pc uintptr, debugStack *string, format *string, args []interface{}, fields Fields) *Log {
 	stack := ParseStack(pc)
 	return &Log{
-		Time:   now(),
+		Time:   etime.CurrentMicrosecond(),
 		Logger: stack.Package,
 
 		Pid:        pid,

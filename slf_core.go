@@ -1,14 +1,18 @@
 package log
 
 import (
+	"github.com/go-eden/etime"
 	"os"
 	"runtime"
 	"runtime/debug"
 	"strings"
 )
 
-var pid = os.Getpid() // the cached id of current process
-var startTime = now() // the start time of current process
+// the cached id of current process
+var pid = os.Getpid()
+
+// the start time of current process
+var startTime = etime.CurrentMicrosecond()
 
 var context string       // the process name
 var globalDriver Driver  // the log driver
