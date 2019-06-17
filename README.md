@@ -32,8 +32,7 @@ What need special explanation is, `slf4go` has very high performance, for more d
 
 For better understanding, check this chart:
 
-![structure](./doc/structure.jpg)<!-- .element width="200" -->
-<img src="./doc/structure.jpg" width="200">
+<img src="./doc/structure.jpg" width="480">
 
 # Features
 
