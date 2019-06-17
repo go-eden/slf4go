@@ -1,23 +1,39 @@
 # Slf4go [![Build Status](https://travis-ci.org/go-eden/slf4go.svg?branch=master)](https://travis-ci.org/go-eden/slf4go)
 
-Simple Logger Facade for Golang, inspired by `Slf4j`, it forced on performance and scalability.
+Simple logger facade for Golang, inspired by `slf4j`, which forced on performance and scalability.
 
 # Introduction
 
-`Slf4go` is different with other librarys like `logrus`/`zap`, it is more like a log specification. 
+Before introducing this library, let's walk through the composition of logging library.
 
-`Slf4go` have several components:
+1. Provide log api, like `Trade` `Debug` `Info` `Warn` `Error` etc.
+2. Collect log information, like log's time, stacktrace, and other context fields. 
+3. Format and print log, or store it directly.
+
+For most logging library, `1` and `2` is quite similar, but different libraries may use different logging libraries, this could lead to chaos.
+
+In the java language, most libraries use `slf4j` as its logging facade,
+you can decide to use `logback` or `log4j` etc as real logging implementation, and switch it easily.   
+
+I believe there should have similar "facade" in golang, and i hope this library could be golang's `slf4j`.
+
+`slf4go` forced on `1` and `2`, it collect all information to build `Log` instance, and finally passed to `Driver`.
+
+What need special explanation is, `slf4go` has very high performance, for more details, check `Performance` section. 
+
+# Components
+
+`slf4go` have several components:
 
 + `log`: Log record's structure, contains `Time`, `Logger`, `Pid`, `Gid`, `Stack`, `Fields`, etc.
 + `logger`: Provide api for `Trace`, `Debug`, `Info`, `Warn`, `Error`, `Panic`, `Fatal`.
 + `driver`: It's an interface, used for decoupling `Api` and `Implementation`.
 + `hook`: Provide a hook feature, can be used for log's async hook.
 
-For better understanding, check this chart.
+For better understanding, check this chart:
 
-![structure](./doc/structure.jpg)
-
-`Slf4go` doesn't conflict with other library, thanks to `Driver` interface, `Slf4go` can working on top of `logrus`/`zap`etc. 
+![structure](./doc/structure.jpg)<!-- .element width="200" -->
+<img src="./doc/structure.jpg" width="200">
 
 # Features
 
