@@ -189,11 +189,73 @@ The `RegisterHook` accept `func(*Log)` argument, and `slf4go` will broadcast all
 
 # Driver
 
+`Driver` is the bridge between the upper `slf4go` and the lower logging implementation. 
+
+```go
+// Driver define the standard log print specification
+type Driver interface {
+	// Retrieve the name of current driver, like 'default', 'logrus'...
+	Name() string
+
+	// Print responsible of printing the standard Log
+	Print(l *Log)
+
+	// Retrieve log level of the specified logger,
+	// it should return the lowest Level that could be print,
+	// which can help invoker to decide whether prepare print or not.
+	GetLevel(logger string) Level
+}
+```
+
+You can provider your own implementation, and replace the default driver.
+
 ## Default StdDriver
 
-By default, `Slf4go` provide a `StdDriver` as fallback, it will format `Log` and print it into `stdout` directly.
+By default, `slf4go` provides a `StdDriver` as fallback, it will format `Log` and print it into `stdout` directly,
+if you don't need other features, could use it directly.
 
-If you don't need other features, could use it directly.
+This `Driver` will print log like this:
+
+```
+2019-06-16 19:35:05.168 [0] [ERROR] [github.com/go-eden/slf4go] default_example.go:17 error log
+```
+
+It contains these information:
+
++ `2019-06-16 19:35:05.168`: Log's datetime.
++ `[0]`: Log's gid, the id of `goroutine`, like `thread-id`, it could be used for tracing.
++ `[ERROR]`: Log's level.
++ `[github.com/go-eden/slf4go]`: the caller's `logger`, it's package name by default.
++ `default_example.go:17`: the caller's `filename` and `line`.
++ `error log`: message, if level is `PANIC` or `FATAL`, `DebugStack` will be print too.
+
+Other information was ignored, like `fields` `pid` etc.
+
+## Provide your own driver
+
+You could implement a `Driver` easily, this is an example:
+
+```go
+type MyDriver struct {}
+
+func (*MyDriver) Name() string {
+	return "my_driver"
+}
+
+func (*MyDriver) Print(l *Log) {
+    // print log, save db, send remote, etc.
+}
+
+func (*MyDriver) GetLevel(logger string) Level {
+	return LEVEL_INFO
+}
+
+func func init() {
+	SetDriver(new(MyDriver))
+}
+```
+
+Above code provided an empty `Driver`, which means all log will be ignored totally.
 
 ## Use `slf4go-classic`
 
@@ -203,21 +265,10 @@ TODO
 
 TODO
 
-## Provide your own driver
-
-TODO
-
 # Performance
 
 TODO
 
-# Benefit
+# License
 
-As we can see, golang changes very quickly, and the logger-tech isn't very mature.
-
-Separate the logger implement from modules maybe a good idea.
-
-if oneday you need to use `logxxx` replace `logrus`, 
-do you want to change all code contains `log.info(...)`?
-   
-or only change `logger_init.go`?
+MIT
