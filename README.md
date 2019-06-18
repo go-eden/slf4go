@@ -267,7 +267,32 @@ TODO
 
 # Performance
 
-TODO
+This section's benchmark was based on `MacBook Pro (15-inch, 2018)`. 
+
+When using empty `Driver`, the performace of `slf4go` is like this:
+ 
+```
+BenchmarkLogger-12    	 3000000	       420 ns/op	     112 B/op	       2 allocs/op
+```
+
+Which means if your `Driver` handles `Log` asychronously, log function like `Debug` `Info` `Warn` `Error` will complete in `500ns`.
+
+Here are some optimization points, hope it can help someone.
+
+## stack
+
+Normally, you can obtain caller's trace `Frame` by `runtime.Caller` and `runtime.FuncForPC`, 
+`slf4go` caches `Frame` for `pc`, which is a big performance boost.
+
+In my benchmark, it improved performace from `430ns` to `180ns`,
+For more details, you can check [source code](./slf_stack.go).
+
+## etime
+
+`slf4go` use [`etime`](https://github.com/go-eden/etime) to get system time, 
+compared to `time.Now()`, `etime.CurrentMicrosecond()` has better performance.
+
+In my benchmark, it improved performance from `68ns` to `40ns`.
 
 # License
 

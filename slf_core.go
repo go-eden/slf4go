@@ -29,7 +29,7 @@ func init() {
 	// setup default context
 	SetContext(exec)
 	// setup default driver
-	SetDriver(new(StdDriver))
+	SetDriver(&StdDriver{})
 	// setup default logger
 	globalLogger = newLogger(nil)
 	// setup default level

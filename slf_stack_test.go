@@ -17,11 +17,11 @@ func TestPCStack(t *testing.T) {
 // BenchmarkParseStack-12    	300000000	         5.83 ns/op	       0 B/op	       0 allocs/op
 func BenchmarkParseStack(b *testing.B) {
 	pc := make([]uintptr, 1, 1)
-	_ = runtime.Callers(1, pc)
 
 	b.ResetTimer()
 	b.ReportAllocs()
 	for i := 0; i < b.N; i++ {
+		_ = runtime.Callers(1, pc)
 		ParseStack(pc[0])
 	}
 }
@@ -81,12 +81,12 @@ func BenchmarkFindCallerFunc(b *testing.B) {
 }
 
 func findCaller() (file string, line int) {
-	_, file, line, _ = runtime.Caller(0)
+	_, file, line, _ = runtime.Caller(2)
 	return
 }
 
 func findCallerFunc() (name string, file string, line int) {
-	pc, file, line, _ := runtime.Caller(0)
+	pc, file, line, _ := runtime.Caller(2)
 	if f := runtime.FuncForPC(pc); f != nil {
 		name = f.Name()
 	}
@@ -100,11 +100,8 @@ func BenchmarkCallers(b *testing.B) {
 	b.ResetTimer()
 	b.ReportAllocs()
 	rpc := make([]uintptr, 1, 1)
-	var f runtime.Frame
 	for i := 0; i < b.N; i++ {
 		runtime.Callers(2, rpc)
-		b.Log(rpc)
-		f, _ = runtime.CallersFrames(rpc).Next()
+		_, _ = runtime.CallersFrames(rpc).Next()
 	}
-	b.Log(f.Function, f.Func.Name(), f.File, f.Line)
 }
