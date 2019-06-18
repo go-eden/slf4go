@@ -48,9 +48,9 @@ What need special explanation is, `slf4go` has very high performance, for more d
 `slf4go` have several components:
 
 + `Log`: Log record's structure, contains `Time`, `Logger`, `Pid`, `Gid`, `Stack`, `Fields`, etc.
-+ `Logger`: Provide api for `Trace`, `Debug`, `Info`, `Warn`, `Error`, `Panic`, `Fatal`.
++ `Logger`: Provide api for `Trace`, `Debug`, `Info`, `Warn`, `Error`, `Panic`, `Fatal` etc.
 + `Driver`: It's an interface, used for decoupling `Api` and `Implementation`.
-+ `Hook`: Provide a hook feature, can be used for log's async hook.
++ `Hook`: Provide a hook feature, can be used for log's synchronous callback.
 
 For better understanding, check this chart:
 
