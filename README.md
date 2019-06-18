@@ -8,7 +8,7 @@ Before introducing this library, let's walk through the composition of logging l
 
 1. **Provide API**: like `Trade` `Debug` `Info` `Warn` `Error` etc.
 2. **Collect Info**: like timestamp, stacktrace, and other context fields etc. 
-3. **Format & Persist**: print log into `stdout` or store it directly etc.
+3. **Format & Store**: print log into `stdout` or store it directly etc.
 
 For most logging library, `1` and `2` is quite similar, 
 but different libraries may use different logging libraries, 
