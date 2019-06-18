@@ -78,7 +78,7 @@ import (
 
 ## Use Global Logger
 
-`Slf4go` provided a global default logger by default, in most case, you can use it directly, don't need any other operation.
+By default, `Slf4go` provided a global `Logger`, in most case, you can use it directly by static function, don't need any other operation.
 
 ```go
 log.Debugf("debug time: %v", time.Now())
@@ -107,7 +107,7 @@ What needs additional explanation is that `panic` and `fatal` will print `gorout
 
 ## Use Your Own Logger
 
-You can create your own logger for other purposes:
+You can create your own `Logger` for other purposes:
 
 ```go
 log1 := log.GetLogger() // Logger's name will be package name, like "main" or "github.com/go-eden/slf4go" etc
@@ -117,18 +117,17 @@ log2.Info("world")
 ```
 
 The `name` of `log1` will be caller's package name, like `main` or `github.com/go-eden/slf4go` etc, it depends on where you call it.
-
 The `name` of `log2` will be the specified `test`.
 
-Those `name` are important, it will be used:
+Those `name` are important:
 
 + It would be fill into the final log directly.
 + It would be used to check if logging is enabled.
 + It would be used to decide whether and where to record the log.
 
-## Setup Fields
+## Use Fields
 
-You could use `BindFields` to add fields into the specified logger, and use `WithFields` to create new logger with the specified fields.
+You could use `BindFields` to add fields into the specified `Logger`, and use `WithFields` to create new `Logger` with the specified fields.
 
 ```go
 log1 := log.GetLogger()
@@ -141,7 +140,7 @@ log2 := log1.WithFields(log.Fields{"fav": "basketball"})
 log2.Info("hello2")
 ```
 
-`fields` will be attached to `Log`, and finally passed to `Driver`, 
+The `fields` will be attached to `Log`, and finally passed to `Driver`, 
 the `Driver` decided how to print or where to store them. 
 
 ## Use Level
@@ -155,7 +154,7 @@ log.Error("error")
 ```
 
 Above code setup global level to be `WARN`, so `INFO` log will be ignored, 
-there should have other way to config different logger's level, 
+there should have other way to config different loggers' level, 
 it based on which `Driver` you use. 
 
 You can check the specified level was enabled or not like this:
