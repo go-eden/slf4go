@@ -165,14 +165,14 @@ l := GetLogger()
 if l.IsDebugEnabled() {
     l.Debug("debug....")
 }
-if l.IsInfoEnabled() {
-    l.Info("info....")
-}
 ```
 
-`slf4go` will ask `Driver` whether accept `DEBUG` and `INFO` log of current logger, this process should cost few nanoseconds.
+In this example, `slf4go` will ask `Driver` whether accept `DEBUG` log of current logger, this process should cost few nanoseconds.
 
-As a comparison, prepare data and build `Log` and pass to `Driver` would cost hundreds of thousands nanoseconds.
+In fact, `Logger` will call `IsDebugEnabled()` in the `Debug()` function to filter unnecessary log, 
+but this can't avoid the performance loss of preparing `Debug()`'s arguments, like string's `concat`. 
+
+As a comparison, preparing data and building `Log` would cost hundreds nanoseconds.
 
 ## Use Hook
 
