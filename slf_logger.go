@@ -3,16 +3,18 @@ package log
 import (
 	"runtime"
 	"runtime/debug"
+	"sync"
 )
 
 // Logger wrap independent logger
 type Logger struct {
+	mut    *sync.Mutex
 	name   *string
 	fields Fields
 }
 
 func newLogger(s *string) *Logger {
-	return &Logger{name: s}
+	return &Logger{mut: new(sync.Mutex), name: s}
 }
 
 // Name obtain logger's name
@@ -31,11 +33,15 @@ func (l *Logger) Level() Level {
 
 // BindFields add the specified fields into the current Logger.
 func (l *Logger) BindFields(fields Fields) {
+	l.mut.Lock()
+	defer l.mut.Unlock()
 	l.fields = NewFields(l.fields, fields)
 }
 
 // WithFields derive an new Logger by the specified fields from the current Logger.
 func (l *Logger) WithFields(fields Fields) *Logger {
+	l.mut.Lock()
+	defer l.mut.Unlock()
 	result := newLogger(l.name)
 	result.BindFields(NewFields(l.fields, fields))
 	return result

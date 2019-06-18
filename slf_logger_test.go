@@ -48,3 +48,14 @@ func BenchmarkNoLog2(b *testing.B) {
 		}
 	}
 }
+
+func TestLoggerFields(t *testing.T) {
+	log1 := GetLogger()
+	log1.BindFields(Fields{"age": 18})
+	log1.Debug("hell1")
+
+	log2 := log1.WithFields(Fields{"score": 100.0})
+	log2.Info("hello2")
+
+	log2.WithFields(Fields{"fav": "basketball"}).Warn("hello3")
+}
