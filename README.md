@@ -1,6 +1,6 @@
 # Slf4go [![Build Status](https://travis-ci.org/go-eden/slf4go.svg?branch=master)](https://travis-ci.org/go-eden/slf4go)
 
-Simple logger facade for Golang, inspired by `slf4j`, which forced on performance and scalability.
+Simple logger facade for Golang, inspired by `slf4j`, which focused on performance and scalability.
 
 # Introduction
 
