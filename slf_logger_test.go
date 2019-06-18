@@ -59,3 +59,14 @@ func TestLoggerFields(t *testing.T) {
 
 	log2.WithFields(Fields{"fav": "basketball"}).Warn("hello3")
 }
+
+func TestLoggerIsEnabled(t *testing.T) {
+	SetLevel(LEVEL_WARN)
+	l := GetLogger()
+	if l.IsDebugEnabled() {
+		l.Debug("debug....")
+	}
+	if l.IsInfoEnabled() {
+		l.Info("info....")
+	}
+}

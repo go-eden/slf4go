@@ -144,7 +144,7 @@ log2.Info("hello2")
 `fields` will be attached to `Log`, and finally passed to `Driver`, 
 the `Driver` decided how to print or where to store them. 
 
-## Setup Level
+## Use Level
 
 You can setup global level by `SetLevel`, which means the lower level log will be ignored.
 
@@ -157,6 +157,22 @@ log.Error("error")
 Above code setup global level to be `WARN`, so `INFO` log will be ignored, 
 there should have other way to config different logger's level, 
 it based on which `Driver` you use. 
+
+You can check the specified level was enabled or not like this:
+
+```go
+l := GetLogger()
+if l.IsDebugEnabled() {
+    l.Debug("debug....")
+}
+if l.IsInfoEnabled() {
+    l.Info("info....")
+}
+```
+
+`slf4go` will ask `Driver` whether accept `DEBUG` and `INFO` log of current logger, this process should cost few nanoseconds.
+
+As a comparison, prepare data and build `Log` and pass to `Driver` would cost hundreds of thousands nanoseconds.
 
 ## Use Hook
 
