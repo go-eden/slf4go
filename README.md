@@ -6,18 +6,40 @@ Simple logger facade for Golang, inspired by `slf4j`, which forced on performanc
 
 Before introducing this library, let's walk through the composition of logging library.
 
-1. Provide log api, like `Trade` `Debug` `Info` `Warn` `Error` etc.
-2. Collect log information, like log's time, stacktrace, and other context fields. 
-3. Format and print log, or store it directly.
+1. **Provide API**: like `Trade` `Debug` `Info` `Warn` `Error` etc.
+2. **Collect Info**: like timestamp, stacktrace, and other context fields etc. 
+3. **Format & Persist**: print log into `stdout` or store it directly etc.
 
-For most logging library, `1` and `2` is quite similar, but different libraries may use different logging libraries, this could lead to chaos.
+For most logging library, `1` and `2` is quite similar, 
+but different libraries may use different logging libraries, 
+if your project dependents multi libraries, the final log could be very messy.
 
-In the java language, most libraries use `slf4j` as its logging facade,
+In the `java` language, most libraries use `slf4j` as its logging facade,
 you can decide to use `logback` or `log4j` etc as real logging implementation, and switch it easily.   
 
 I believe there should have similar "facade" in golang, and i hope this library could be golang's `slf4j`.
 
-`slf4go` forced on `1` and `2`, it collect all information to build `Log` instance, and finally passed to `Driver`.
+`slf4go` focus on `1` and `2`, and will collect all information to build an integrated `Log` instance,
+it expect other library provide `3` implementation, for more details, check `Driver` section.
+
+The structure of standard `Log` is:
+
+```go
+type Log struct {
+	Time   int64  `json:"date"`   // log's time(us)
+	Logger string `json:"logger"` // log's name, default is package
+
+	Pid        int     `json:"pid"`         // the process id which generated this log
+	Gid        int     `json:"gid"`         // the goroutine id which generated this log
+	DebugStack *string `json:"debug_stack"` // the debug stack of this log. Only for Panic and Fatal
+	Stack      *Stack  `json:"stack"`       // the stack info of this log. Contains {Package, Filename, Function, Line}
+
+	Level  Level         `json:"level"`  // log's level
+	Format *string       `json:"format"` // log's format
+	Args   []interface{} `json:"args"`   // log's format args
+	Fields Fields        `json:"fields"` // additional custom fields
+}
+``` 
 
 What need special explanation is, `slf4go` has very high performance, for more details, check `Performance` section. 
 
@@ -25,20 +47,20 @@ What need special explanation is, `slf4go` has very high performance, for more d
 
 `slf4go` have several components:
 
-+ `log`: Log record's structure, contains `Time`, `Logger`, `Pid`, `Gid`, `Stack`, `Fields`, etc.
-+ `logger`: Provide api for `Trace`, `Debug`, `Info`, `Warn`, `Error`, `Panic`, `Fatal`.
-+ `driver`: It's an interface, used for decoupling `Api` and `Implementation`.
-+ `hook`: Provide a hook feature, can be used for log's async hook.
++ `Log`: Log record's structure, contains `Time`, `Logger`, `Pid`, `Gid`, `Stack`, `Fields`, etc.
++ `Logger`: Provide api for `Trace`, `Debug`, `Info`, `Warn`, `Error`, `Panic`, `Fatal`.
++ `Driver`: It's an interface, used for decoupling `Api` and `Implementation`.
++ `Hook`: Provide a hook feature, can be used for log's async hook.
 
 For better understanding, check this chart:
 
 <img src="./doc/structure.jpg" width="480">
 
-# Features
+# Usage
 
-TODO
+This section provides complete instructions on how to install and use `slf4go`.
 
-# Install
+## Install
 
 Could use this command to install `slf4go`:
 
@@ -54,27 +76,18 @@ import (
 )
 ```
 
-# Usage
+## Use Global Logger
 
 `Slf4go` provided a global default logger by default, in most case, you can use it directly, don't need any other operation.
 
 ```go
-package main
-
-import (
-	log "github.com/go-eden/slf4go"
-	"time"
-)
-
-func main() {
-	log.Debugf("debug time: %v", time.Now())
-	log.Warn("warn log")
-	log.Error("error log")
-	log.Panicf("panic time: %v", time.Now())
-}
+log.Debugf("debug time: %v", time.Now())
+log.Warn("warn log")
+log.Error("error log")
+log.Panicf("panic time: %v", time.Now())
 ``` 
 
-Result is this:
+The final log is like this:
 
 ```
 2019-06-16 19:35:05.167 [0] [TRACE] [main] default_example.go:12 debug time: 2019-06-16 19:35:05.167783 +0800 CST m=+0.000355435
@@ -90,43 +103,76 @@ main.main()
 	/Users/sulin/workspace/go-eden/slf4go/example/default_example.go:20 +0x213
 ```
 
-Notice: `panic` and `fatal` will print `goroutine` stack automatically.
+What needs additional explanation is that `panic` and `fatal` will print `goroutine` stack automatically.
 
-You cal also create your own logger for other purposes:
+## Use Your Own Logger
+
+You can create your own logger for other purposes:
 
 ```go
-log1 := log.GetLogger()
+log1 := log.GetLogger() // Logger's name will be package name, like "main" or "github.com/go-eden/slf4go" etc
 log1.Info("hello")
-log2 := log.NewLogger("anyname")
+log2 := log.NewLogger("test") // Logger's name will be the specified "test"
 log2.Info("world")
 ```
 
-# Custom Driver
+The `name` of `log1` will be caller's package name, like `main` or `github.com/go-eden/slf4go` etc, it depends on where you call it.
 
-TODO
+The `name` of `log2` will be the specified `test`.
 
-## Introduce `Log`
+Those `name` are important, it will be used:
 
-`Logger` will collect all required infomation into `Log` instance, `Driver` should print or store it as need.
++ It would be fill into the final log directly.
++ It would be used to check if logging is enabled.
++ It would be used to decide whether and where to record the log.
 
-The structure is like:
+## Setup Fields
+
+You could use `BindFields` to add fields into the specified logger, and use `WithFields` to create new logger with the specified fields.
 
 ```go
-type Log struct {
-	Time   int64  `json:"date"`   // log's time(us)
-	Logger string `json:"logger"` // log's name, default is package
+log1 := log.GetLogger()
+log1.BindFields(log.Fields{"age": 18})
+log1.Debug("hell1")
 
-	Pid        int     `json:"pid"`         // the process id which generated this log
-	Gid        int     `json:"gid"`         // the goroutine id which generated this log
-	Stack      *Stack  `json:"stack"`       // the stack info of this log
-	DebugStack *string `json:"debug_stack"` // the debug stack of this log
+log1.WithFields(log.Fields{"fav": "basketball"}).Warn("hello2")
 
-	Level  Level         `json:"level"`  // log's level
-	Format *string       `json:"format"` // log's format
-	Args   []interface{} `json:"args"`   // log's format args
-	Fields Fields        `json:"fields"` // additional custom fields
-}
-``` 
+log2 := log1.WithFields(log.Fields{"fav": "basketball"})
+log2.Info("hello2")
+```
+
+`fields` will be attached to `Log`, and finally passed to `Driver`, 
+the `Driver` decided how to print or where to store them. 
+
+## Setup Level
+
+You can setup global level by `SetLevel`, which means the lower level log will be ignored.
+
+```go
+log.SetLevel(log.LEVEL_WARN)
+log.Info("no log") // will be ignored
+log.Error("error")
+```
+
+Above code setup global level to be `WARN`, so `INFO` log will be ignored, 
+there should have other way to config different logger's level, 
+it based on which `Driver` you use. 
+
+## Use Hook
+
+In `slf4go`, it's very easy to register log hook:
+
+```go
+log.RegisterHook(func(l *Log) {
+    println(l) // you better not log again, it could be infinite loop 
+})
+log.Trace("are you prety?", true)
+log.Debugf("are you prety? %t", true)
+```  
+
+The `RegisterHook` accept `func(*Log)` argument, and `slf4go` will broadcast all `Log` to it asynchronously.
+
+# Driver
 
 ## Default StdDriver
 
@@ -138,15 +184,11 @@ If you don't need other features, could use it directly.
 
 TODO
 
-## Use `logrus`
+## Use `slf4go-logrus`
 
 TODO
 
 ## Provide your own driver
-
-TODO
-
-# Custom Hook
 
 TODO
 
