@@ -72,7 +72,7 @@ Could import `slf4go` like this:
 
 ```go
 import (
-	log "github.com/go-eden/slf4go"
+	slog "github.com/go-eden/slf4go"
 )
 ```
 
@@ -81,10 +81,10 @@ import (
 By default, `Slf4go` provided a global `Logger`, in most case, you can use it directly by static function, don't need any other operation.
 
 ```go
-log.Debugf("debug time: %v", time.Now())
-log.Warn("warn log")
-log.Error("error log")
-log.Panicf("panic time: %v", time.Now())
+slog.Debugf("debug time: %v", time.Now())
+slog.Warn("warn log")
+slog.Error("error log")
+slog.Panicf("panic time: %v", time.Now())
 ``` 
 
 The final log is like this:
@@ -110,9 +110,9 @@ What needs additional explanation is that `panic` and `fatal` will print `gorout
 You can create your own `Logger` for other purposes:
 
 ```go
-log1 := log.GetLogger() // Logger's name will be package name, like "main" or "github.com/go-eden/slf4go" etc
+log1 := slog.GetLogger() // Logger's name will be package name, like "main" or "github.com/go-eden/slf4go" etc
 log1.Info("hello")
-log2 := log.NewLogger("test") // Logger's name will be the specified "test"
+log2 := slog.NewLogger("test") // Logger's name will be the specified "test"
 log2.Info("world")
 ```
 
@@ -130,13 +130,13 @@ Those `name` are important:
 You could use `BindFields` to add fields into the specified `Logger`, and use `WithFields` to create new `Logger` with the specified fields.
 
 ```go
-log1 := log.GetLogger()
-log1.BindFields(log.Fields{"age": 18})
+log1 := slog.GetLogger()
+log1.BindFields(slog.Fields{"age": 18})
 log1.Debug("hell1")
 
-log1.WithFields(log.Fields{"fav": "basketball"}).Warn("hello2")
+log1.WithFields(slog.Fields{"fav": "basketball"}).Warn("hello2")
 
-log2 := log1.WithFields(log.Fields{"fav": "basketball"})
+log2 := log1.WithFields(slog.Fields{"fav": "basketball"})
 log2.Info("hello2")
 ```
 
@@ -148,9 +148,9 @@ the `Driver` decided how to print or where to store them.
 You can setup global level by `SetLevel`, which means the lower level log will be ignored.
 
 ```go
-log.SetLevel(log.LEVEL_WARN)
-log.Info("no log") // will be ignored
-log.Error("error")
+slog.SetLevel(slog.LEVEL_WARN)
+slog.Info("no log") // will be ignored
+slog.Error("error")
 ```
 
 Above code setup global level to be `WARN`, so `INFO` log will be ignored, 
@@ -160,7 +160,7 @@ it based on which `Driver` you use.
 You can check the specified level was enabled or not like this:
 
 ```go
-l := GetLogger()
+l := slog.GetLogger()
 if l.IsDebugEnabled() {
     l.Debug("debug....")
 }
@@ -178,11 +178,10 @@ As a comparison, preparing data and building `Log` would cost hundreds nanosecon
 In `slf4go`, it's very easy to register log hook:
 
 ```go
-log.RegisterHook(func(l *Log) {
+slog.RegisterHook(func(l *Log) {
     println(l) // you better not log again, it could be infinite loop 
 })
-log.Trace("are you prety?", true)
-log.Debugf("are you prety? %t", true)
+slog.Debugf("are you prety? %t", true)
 ```  
 
 The `RegisterHook` accept `func(*Log)` argument, and `slf4go` will broadcast all `Log` to it asynchronously.
@@ -242,7 +241,7 @@ func (*MyDriver) Name() string {
 	return "my_driver"
 }
 
-func (*MyDriver) Print(l *Log) {
+func (*MyDriver) Print(l *slog.Log) {
     // print log, save db, send remote, etc.
 }
 
@@ -251,7 +250,7 @@ func (*MyDriver) GetLevel(logger string) Level {
 }
 
 func func init() {
-	SetDriver(new(MyDriver))
+	slog.SetDriver(new(MyDriver))
 }
 ```
 
