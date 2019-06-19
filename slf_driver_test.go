@@ -15,7 +15,7 @@ func (*NilDriver) Print(l *Log) {
 }
 
 func (*NilDriver) GetLevel(logger string) Level {
-	return LEVEL_TRACE
+	return TraceLevel
 }
 
 func TestNilDriver(t *testing.T) {

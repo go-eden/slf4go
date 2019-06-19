@@ -50,5 +50,5 @@ func (p *StdDriver) Print(l *Log) {
 }
 
 func (p *StdDriver) GetLevel(logger string) Level {
-	return LEVEL_TRACE
+	return TraceLevel
 }

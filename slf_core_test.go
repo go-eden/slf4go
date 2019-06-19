@@ -46,7 +46,7 @@ func TestNewLogger(t *testing.T) {
 	log := NewLogger("slf4go")
 	log.Info("hello world")
 	log.Trace("hhhhhh")
-	SetLevel(LEVEL_WARN)
+	SetLevel(WarnLevel)
 	log.Info("no log")
 	log.Error("error")
 	SetContext("test")

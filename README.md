@@ -148,7 +148,7 @@ the `Driver` decided how to print or where to store them.
 You can setup global level by `SetLevel`, which means the lower level log will be ignored.
 
 ```go
-slog.SetLevel(slog.LEVEL_WARN)
+slog.SetLevel(slog.WarnLevel)
 slog.Info("no log") // will be ignored
 slog.Error("error")
 ```
@@ -246,7 +246,7 @@ func (*MyDriver) Print(l *slog.Log) {
 }
 
 func (*MyDriver) GetLevel(logger string) Level {
-	return LEVEL_INFO
+	return InfoLevel
 }
 
 func func init() {

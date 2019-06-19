@@ -4,7 +4,6 @@ import (
 	"github.com/go-eden/etime"
 	"github.com/huandu/go-tls"
 	"strconv"
-	"syscall"
 )
 
 // Fields represents attached fileds of log
@@ -28,31 +27,31 @@ func NewFields(fields ...Fields) Fields {
 type Level int
 
 const (
-	LEVEL_TRACE Level = iota
-	LEVEL_DEBUG
-	LEVEL_INFO
-	LEVEL_WARN
-	LEVEL_ERROR
-	LEVEL_PANIC
-	LEVEL_FATAL
+	TraceLevel Level = iota
+	DebugLevel
+	InfoLevel
+	WarnLevel
+	ErrorLevel
+	PanicLevel
+	FataLevel
 )
 
 // Retrieve Level's name
 func (l Level) String() string {
 	switch l {
-	case LEVEL_TRACE:
+	case TraceLevel:
 		return "TRACE"
-	case LEVEL_DEBUG:
+	case DebugLevel:
 		return "DEBUG"
-	case LEVEL_INFO:
+	case InfoLevel:
 		return "INFO"
-	case LEVEL_WARN:
+	case WarnLevel:
 		return "WARN"
-	case LEVEL_ERROR:
+	case ErrorLevel:
 		return "ERROR"
-	case LEVEL_PANIC:
+	case PanicLevel:
 		return "PANIC"
-	case LEVEL_FATAL:
+	case FataLevel:
 		return "FATAL"
 	default:
 		return strconv.Itoa(int(l))
@@ -98,11 +97,4 @@ func NewLog(level Level, pc uintptr, debugStack *string, format *string, args []
 // Uptime obtain log's createTime relative to application's startTime
 func (l *Log) Uptime() int64 {
 	return l.Time - startTime
-}
-
-// Obtain current microsecond, use syscall for better performance
-func now() int64 {
-	var tv syscall.Timeval
-	_ = syscall.Gettimeofday(&tv)
-	return int64(tv.Sec)*1e6 + int64(tv.Usec)
 }

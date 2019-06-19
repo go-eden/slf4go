@@ -25,7 +25,7 @@ func BenchmarkSlice1(b *testing.B) {
 
 // BenchmarkNoLog-12    	50000000	        31.8 ns/op	      32 B/op	       1 allocs/op
 func BenchmarkNoLog(b *testing.B) {
-	SetLevel(LEVEL_WARN)
+	SetLevel(WarnLevel)
 	log := GetLogger()
 
 	b.ResetTimer()
@@ -37,7 +37,7 @@ func BenchmarkNoLog(b *testing.B) {
 
 // BenchmarkNoLog2-12    	500000000	         3.34 ns/op	       0 B/op	       0 allocs/op
 func BenchmarkNoLog2(b *testing.B) {
-	SetLevel(LEVEL_WARN)
+	SetLevel(WarnLevel)
 	log := GetLogger()
 
 	b.ResetTimer()
@@ -61,7 +61,7 @@ func TestLoggerFields(t *testing.T) {
 }
 
 func TestLoggerIsEnabled(t *testing.T) {
-	SetLevel(LEVEL_WARN)
+	SetLevel(WarnLevel)
 	l := GetLogger()
 	if l.IsDebugEnabled() {
 		l.Debug("debug....")
