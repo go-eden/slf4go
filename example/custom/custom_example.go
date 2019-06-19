@@ -1,8 +1,8 @@
 package main
 
-import log "github.com/go-eden/slf4go"
+import slog "github.com/go-eden/slf4go"
 
 func main() {
-	testLog := log.NewLogger("test")
+	testLog := slog.NewLogger("test")
 	testLog.Info("hello world")
 }
