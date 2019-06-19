@@ -262,7 +262,12 @@ TODO
 
 ## Use `slf4go-logrus`
 
-TODO
+This is a simple `Driver` implementation for bridging `slf4go` and `logrus`.
+
+I haven't used logrus too much, so this library don't have lots of features currently, 
+hope you can help me improve this library, any Pull Request will be very welcomed.
+
+[https://github.com/go-eden/slf4go-logrus](https://github.com/go-eden/slf4go-logrus)
 
 # Performance
 
