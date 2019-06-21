@@ -77,7 +77,18 @@ type Log struct {
 // Create an new Log instance
 // for better performance, caller should be provided by upper
 func NewLog(level Level, pc uintptr, debugStack *string, format *string, args []interface{}, fields Fields) *Log {
-	stack := ParseStack(pc)
+	var stack *Stack
+	// support first args as custom stack
+	if format == nil && len(args) > 1 {
+		if s, ok := args[0].(*Stack); ok {
+			stack = s
+			args = args[1:]
+		}
+	}
+	// default stack
+	if stack == nil {
+		stack = ParseStack(pc)
+	}
 	return &Log{
 		Time:   etime.CurrentMicrosecond(),
 		Logger: stack.Package,
