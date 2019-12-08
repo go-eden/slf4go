@@ -12,7 +12,7 @@ import (
 var pid = os.Getpid()
 
 // the start time of current process
-var startTime = etime.CurrentMicrosecond()
+var startTime = etime.NowMicrosecond() - 1
 
 var context string       // the process name
 var globalDriver Driver  // the log driver
