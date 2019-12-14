@@ -20,7 +20,7 @@ type Stack struct {
 	Line     int    `json:"line"`
 }
 
-// cacheStack save the specified stachInfo into global atomic map.
+// cacheStack save the specified stackInfo into global atomic map.
 func cacheStack(s *Stack) {
 	stackLock.Lock()
 	defer stackLock.Unlock()

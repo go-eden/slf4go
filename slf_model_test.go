@@ -1,7 +1,7 @@
 package slog
 
 import (
-	"github.com/huandu/go-tls"
+	"github.com/go-eden/common/goid"
 	"os"
 	"runtime"
 	"syscall"
@@ -12,19 +12,19 @@ import (
 func TestGid(t *testing.T) {
 	for i := 0; i < 100; i++ {
 		go func() {
-			id := tls.ID() // Get a unique ID for current goroutine. It's guaranteed to be unique.
+			id := goid.Gid() // Get a unique ID for current goroutine. It's guaranteed to be unique.
 			t.Log(id)
 		}()
 	}
 	time.Sleep(time.Second)
 }
 
-// BenchmarkGid-12    	100000000	        16.7 ns/op	       0 B/op	       0 allocs/op
+// BenchmarkGid-12    	302519848	         3.76 ns/op	       0 B/op	       0 allocs/op
 func BenchmarkGid(b *testing.B) {
 	b.ReportAllocs()
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		tls.ID()
+		goid.Gid()
 	}
 }
 

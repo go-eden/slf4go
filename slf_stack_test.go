@@ -12,6 +12,19 @@ func TestPCStack(t *testing.T) {
 	t.Log(ParseStack(pc[0]))
 	t.Log(ParseStack(pc[0]))
 	t.Log(ParseStack(pc[0]))
+
+	for i := 0; i < 3; i++ {
+		t.Log(printPC())
+	}
+
+	t.Log(printPC())
+	t.Log(printPC())
+}
+
+func printPC() uintptr {
+	pc := make([]uintptr, 1, 1)
+	_ = runtime.Callers(1, pc)
+	return pc[0]
 }
 
 // BenchmarkParseStack-12    	300000000	         5.83 ns/op	       0 B/op	       0 allocs/op

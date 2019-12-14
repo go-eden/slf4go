@@ -2,7 +2,7 @@ package slog
 
 import (
 	"github.com/go-eden/common/etime"
-	"github.com/huandu/go-tls"
+	"github.com/go-eden/common/goid"
 	"strconv"
 )
 
@@ -94,7 +94,7 @@ func NewLog(level Level, pc uintptr, debugStack *string, format *string, args []
 		Logger: stack.Package,
 
 		Pid:        pid,
-		Gid:        int(tls.ID()),
+		Gid:        int(goid.Gid()),
 		Stack:      stack,
 		DebugStack: debugStack,
 
