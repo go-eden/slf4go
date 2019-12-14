@@ -1,7 +1,7 @@
 package slog
 
 import (
-	"github.com/go-eden/etime"
+	"github.com/go-eden/common/etime"
 	"os"
 	"runtime"
 	"runtime/debug"

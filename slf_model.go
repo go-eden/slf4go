@@ -1,7 +1,7 @@
 package slog
 
 import (
-	"github.com/go-eden/etime"
+	"github.com/go-eden/common/etime"
 	"github.com/huandu/go-tls"
 	"strconv"
 )
@@ -90,7 +90,7 @@ func NewLog(level Level, pc uintptr, debugStack *string, format *string, args []
 		stack = ParseStack(pc)
 	}
 	return &Log{
-		Time:   etime.CurrentMicrosecond(),
+		Time:   etime.NowMicrosecond(),
 		Logger: stack.Package,
 
 		Pid:        pid,
