@@ -50,6 +50,9 @@ func GetContext() string {
 func SetDriver(d Driver) {
 	globalDriver = d
 }
+func GetDriver() Driver {
+	return globalDriver
+}
 
 // SetLevel update the global level, all lower level will not be send to driver to print
 func SetLevel(l Level) {

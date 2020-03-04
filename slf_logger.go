@@ -233,7 +233,7 @@ func (l *Logger) print(level Level, pc uintptr, stack *string, v ...interface{})
 		log.Logger = *l.name
 	}
 	globalHook.broadcast(log)
-	globalDriver.Print(log)
+	GetDriver().Print(log)
 }
 
 // do printf
