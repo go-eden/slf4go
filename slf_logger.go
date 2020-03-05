@@ -1,6 +1,7 @@
 package slog
 
 import (
+	"fmt"
 	"runtime"
 	"runtime/debug"
 	"sync"
@@ -42,7 +43,8 @@ func (l *Logger) BindFields(fields Fields) {
 func (l *Logger) WithFields(fields Fields) *Logger {
 	l.mut.Lock()
 	defer l.mut.Unlock()
-	result := newLogger(l.name)
+	newLoggerName := fmt.Sprintf("%s_w", *l.name)
+	result := newLogger(&newLoggerName)
 	result.BindFields(NewFields(l.fields, fields))
 	return result
 }
