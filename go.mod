@@ -1,4 +1,4 @@
-module github.com/go-eden/slf4go
+module github.com/phenix3443/slf4go
 
 go 1.13
 
