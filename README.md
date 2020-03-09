@@ -260,6 +260,12 @@ Above code provided an empty `Driver`, which means all log will be ignored total
 
 TODO
 
+## User `slf4go-zap`
+
+Thanks @phenix3443.
+
+[https://github.com/go-eden/slf4go-zap](https://github.com/go-eden/slf4go-zap)
+
 ## Use `slf4go-logrus`
 
 This is a simple `Driver` implementation for bridging `slf4go` and `logrus`.
