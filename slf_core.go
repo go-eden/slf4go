@@ -111,7 +111,7 @@ func Debugf(format string, v ...interface{}) {
 	}
 	var pc [1]uintptr
 	_ = runtime.Callers(2, pc[:])
-	globalLogger.printf(TraceLevel, pc[0], nil, format, v...)
+	globalLogger.printf(DebugLevel, pc[0], nil, format, v...)
 }
 
 // Info record info level's log
