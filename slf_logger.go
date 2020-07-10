@@ -79,7 +79,7 @@ func (l *Logger) IsPanicEnabled() bool {
 
 // Whether fatal of current logger enabled or not
 func (l *Logger) IsFatalEnabled() bool {
-	return l.Level() <= FataLevel
+	return l.Level() <= FatalLevel
 }
 
 // Trace record trace level's log
@@ -190,7 +190,7 @@ func (l *Logger) Panic(v ...interface{}) {
 	var pc [1]uintptr
 	_ = runtime.Callers(2, pc[:])
 	stack := string(debug.Stack())
-	l.print(FataLevel, pc[0], &stack, v...)
+	l.print(FatalLevel, pc[0], &stack, v...)
 }
 
 // Panic record panic level's log with custom format
@@ -212,7 +212,7 @@ func (l *Logger) Fatal(v ...interface{}) {
 	var pc [1]uintptr
 	_ = runtime.Callers(2, pc[:])
 	stack := string(debug.Stack())
-	l.print(FataLevel, pc[0], &stack, v...)
+	l.print(FatalLevel, pc[0], &stack, v...)
 }
 
 // Fatalf record fatal level's log with custom format.
@@ -223,7 +223,7 @@ func (l *Logger) Fatalf(format string, v ...interface{}) {
 	var pc [1]uintptr
 	_ = runtime.Callers(2, pc[:])
 	stack := string(debug.Stack())
-	l.printf(FataLevel, pc[0], &stack, format, v...)
+	l.printf(FatalLevel, pc[0], &stack, format, v...)
 }
 
 // do print

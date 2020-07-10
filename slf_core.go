@@ -198,22 +198,22 @@ func Panicf(format string, v ...interface{}) {
 
 // Fatal record fatal level's log
 func Fatal(v ...interface{}) {
-	if globalLevel > FataLevel {
+	if globalLevel > FatalLevel {
 		return
 	}
 	var pc [1]uintptr
 	_ = runtime.Callers(2, pc[:])
 	stack := string(debug.Stack())
-	globalLogger.print(FataLevel, pc[0], &stack, v...)
+	globalLogger.print(FatalLevel, pc[0], &stack, v...)
 }
 
 // Fatalf record fatal level's log with custom format.
 func Fatalf(format string, v ...interface{}) {
-	if globalLevel > FataLevel {
+	if globalLevel > FatalLevel {
 		return
 	}
 	var pc [1]uintptr
 	_ = runtime.Callers(2, pc[:])
 	stack := string(debug.Stack())
-	globalLogger.printf(FataLevel, pc[0], &stack, format, v...)
+	globalLogger.printf(FatalLevel, pc[0], &stack, format, v...)
 }

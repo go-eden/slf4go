@@ -33,7 +33,7 @@ const (
 	WarnLevel
 	ErrorLevel
 	PanicLevel
-	FataLevel
+	FatalLevel
 )
 
 // Retrieve Level's name
@@ -51,7 +51,7 @@ func (l Level) String() string {
 		return "ERROR"
 	case PanicLevel:
 		return "PANIC"
-	case FataLevel:
+	case FatalLevel:
 		return "FATAL"
 	default:
 		return strconv.Itoa(int(l))

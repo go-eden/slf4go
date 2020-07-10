@@ -67,7 +67,7 @@ func BenchmarkNewLog(b *testing.B) {
 }
 
 func TestLevel(t *testing.T) {
-	t.Log(FataLevel.String())
+	t.Log(FatalLevel.String())
 	t.Log(TraceLevel)
 }
 
