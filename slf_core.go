@@ -66,7 +66,11 @@ func GetLogger() *Logger {
 	var pc [1]uintptr
 	_ = runtime.Callers(2, pc[:])
 	s := ParseStack(pc[0])
-	return newLogger(&s.Package)
+	var name = s.Package
+	if name == "" {
+		name = "-"
+	}
+	return newLogger(&name)
 }
 
 // NewLogger create new Logger by the specified name
