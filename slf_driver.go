@@ -9,19 +9,20 @@ import (
 
 // Driver define the standard log print specification
 type Driver interface {
-	// Retrieve the name of current driver, like 'default', 'logrus'...
+
+	// Name return the name of current driver, like 'default', 'logrus'...
 	Name() string
 
 	// Print responsible of printing the standard Log
 	Print(l *Log)
 
-	// Retrieve log level of the specified logger,
+	// GetLevel return log level of the specified logger,
 	// it should return the lowest Level that could be print,
 	// which can help invoker to decide whether prepare print or not.
 	GetLevel(logger string) Level
 }
 
-// The default driver, just print stdout directly
+// StdDriver The default driver, just print stdout directly
 type StdDriver struct {
 	sync.Mutex
 }
@@ -49,6 +50,6 @@ func (p *StdDriver) Print(l *Log) {
 	_, _ = os.Stdout.Write([]byte(result))
 }
 
-func (p *StdDriver) GetLevel(logger string) Level {
+func (p *StdDriver) GetLevel(_ string) Level {
 	return TraceLevel
 }

@@ -30,7 +30,7 @@ func BenchmarkGid(b *testing.B) {
 
 func TestPid(t *testing.T) {
 	t.Log(os.Getpid())
-	time.Sleep(time.Minute)
+	time.Sleep(time.Second)
 }
 
 // BenchmarkPid-12    	100000000	        17.9 ns/op	       0 B/op	       0 allocs/op

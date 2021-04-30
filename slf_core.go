@@ -185,7 +185,7 @@ func Panic(v ...interface{}) {
 	globalLogger.print(PanicLevel, pc[0], &stack, v...)
 }
 
-// Panic record panic level's log with custom format
+// Panicf record panic level's log with custom format
 func Panicf(format string, v ...interface{}) {
 	if globalLevel > PanicLevel {
 		return

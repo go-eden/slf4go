@@ -11,10 +11,10 @@ func (*NilDriver) Name() string {
 	return ""
 }
 
-func (*NilDriver) Print(l *Log) {
+func (*NilDriver) Print(_ *Log) {
 }
 
-func (*NilDriver) GetLevel(logger string) Level {
+func (*NilDriver) GetLevel(_ string) Level {
 	return TraceLevel
 }
 

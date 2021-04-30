@@ -8,13 +8,13 @@ import (
 
 // Logger wrap independent logger
 type Logger struct {
-	mut    *sync.Mutex
+	sync.Mutex
 	name   *string
 	fields Fields
 }
 
 func newLogger(s *string) *Logger {
-	return &Logger{mut: new(sync.Mutex), name: s}
+	return &Logger{name: s}
 }
 
 // Name obtain logger's name
@@ -33,51 +33,51 @@ func (l *Logger) Level() Level {
 
 // BindFields add the specified fields into the current Logger.
 func (l *Logger) BindFields(fields Fields) {
-	l.mut.Lock()
-	defer l.mut.Unlock()
+	l.Lock()
 	l.fields = NewFields(l.fields, fields)
+	l.Unlock()
 }
 
 // WithFields derive an new Logger by the specified fields from the current Logger.
 func (l *Logger) WithFields(fields Fields) *Logger {
-	l.mut.Lock()
-	defer l.mut.Unlock()
+	l.Lock()
 	result := newLogger(l.name)
 	result.BindFields(NewFields(l.fields, fields))
+	l.Unlock()
 	return result
 }
 
-// Whether trace of current logger enabled or not
+// IsTraceEnabled Whether trace of current logger enabled or not
 func (l *Logger) IsTraceEnabled() bool {
 	return l.Level() <= TraceLevel
 }
 
-// Whether debug of current logger enabled or not
+// IsDebugEnabled Whether debug of current logger enabled or not
 func (l *Logger) IsDebugEnabled() bool {
 	return l.Level() <= DebugLevel
 }
 
-// Whether info of current logger enabled or not
+// IsInfoEnabled Whether info of current logger enabled or not
 func (l *Logger) IsInfoEnabled() bool {
 	return l.Level() <= InfoLevel
 }
 
-// Whether warn of current logger enabled or not
+// IsWarnEnabled Whether warn of current logger enabled or not
 func (l *Logger) IsWarnEnabled() bool {
 	return l.Level() <= WarnLevel
 }
 
-// Whether error of current logger enabled or not
+// IsErrorEnabled Whether error of current logger enabled or not
 func (l *Logger) IsErrorEnabled() bool {
 	return l.Level() <= ErrorLevel
 }
 
-// Whether panic of current logger enabled or not
+// IsPanicEnabled Whether panic of current logger enabled or not
 func (l *Logger) IsPanicEnabled() bool {
 	return l.Level() <= PanicLevel
 }
 
-// Whether fatal of current logger enabled or not
+// IsFatalEnabled Whether fatal of current logger enabled or not
 func (l *Logger) IsFatalEnabled() bool {
 	return l.Level() <= FatalLevel
 }
@@ -193,7 +193,7 @@ func (l *Logger) Panic(v ...interface{}) {
 	l.print(FatalLevel, pc[0], &stack, v...)
 }
 
-// Panic record panic level's log with custom format
+// Panicf record panic level's log with custom format
 func (l *Logger) Panicf(format string, v ...interface{}) {
 	if !l.IsPanicEnabled() {
 		return // don't need log
@@ -226,7 +226,6 @@ func (l *Logger) Fatalf(format string, v ...interface{}) {
 	l.printf(FatalLevel, pc[0], &stack, format, v...)
 }
 
-// do print
 func (l *Logger) print(level Level, pc uintptr, stack *string, v ...interface{}) {
 	log := NewLog(level, pc, stack, nil, v, l.fields)
 	if l.name != nil {
@@ -236,7 +235,6 @@ func (l *Logger) print(level Level, pc uintptr, stack *string, v ...interface{})
 	globalDriver.Print(log)
 }
 
-// do printf
 func (l *Logger) printf(level Level, pc uintptr, stack *string, format string, v ...interface{}) {
 	log := NewLog(level, pc, stack, &format, v, l.fields)
 	if l.name != nil {

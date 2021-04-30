@@ -30,11 +30,11 @@ func printPC() uintptr {
 // BenchmarkParseStack-12    	300000000	         5.83 ns/op	       0 B/op	       0 allocs/op
 func BenchmarkParseStack(b *testing.B) {
 	pc := make([]uintptr, 1, 1)
+	_ = runtime.Callers(1, pc)
 
 	b.ResetTimer()
 	b.ReportAllocs()
 	for i := 0; i < b.N; i++ {
-		_ = runtime.Callers(1, pc)
 		ParseStack(pc[0])
 	}
 }
@@ -47,7 +47,7 @@ func BenchmarkParseStack2(b *testing.B) {
 	b.ResetTimer()
 	b.ReportAllocs()
 	for i := 0; i < b.N; i++ {
-		parseStack(pc[0])
+		ParseStack2(pc[0])
 	}
 }
 

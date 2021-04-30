@@ -8,8 +8,12 @@ import (
 )
 
 // for better preformance, use atomic-map
-var stackLock = new(sync.Mutex)
-var stackCache = new(atomic.Value)
+var (
+	stackLock  = new(sync.Mutex)
+	stackCache = new(atomic.Value)
+
+	stackMap = sync.Map{} // for test/compare
+)
 
 // Stack represent pc's stack details.
 type Stack struct {
@@ -28,6 +32,7 @@ func cacheStack(s *Stack) {
 	if x := stackCache.Load(); x != nil {
 		oldMap = x.(map[uintptr]*Stack)
 	}
+	// don't modify oldMap to avoid concurrency problem
 	newMap := make(map[uintptr]*Stack)
 	if oldMap != nil {
 		for k, v := range oldMap {
@@ -96,5 +101,16 @@ func ParseStack(pc uintptr) (s *Stack) {
 	}
 	s = parseStack(pc)
 	cacheStack(s)
+	return
+}
+
+// ParseStack2 this is slower, cannot use it.
+func ParseStack2(pc uintptr) (s *Stack) {
+	if v, ok := stackMap.Load(pc); ok {
+		s = v.(*Stack)
+	} else {
+		s = parseStack(pc)
+		stackMap.Store(pc, s)
+	}
 	return
 }

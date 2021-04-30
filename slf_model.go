@@ -9,7 +9,7 @@ import (
 // Fields represents attached fileds of log
 type Fields map[string]interface{}
 
-// Merge multi fileds into new Fields instance
+// NewFields merge multi fileds into new Fields instance
 func NewFields(fields ...Fields) Fields {
 	result := Fields{}
 	for _, item := range fields {
@@ -23,7 +23,6 @@ func NewFields(fields ...Fields) Fields {
 	return result
 }
 
-// Log level
 type Level int
 
 const (
@@ -36,7 +35,7 @@ const (
 	FatalLevel
 )
 
-// Retrieve Level's name
+// String Retrieve Level's name
 func (l Level) String() string {
 	switch l {
 	case TraceLevel:
@@ -74,7 +73,7 @@ type Log struct {
 	Fields Fields        `json:"fields"` // additional custom fields
 }
 
-// Create an new Log instance
+// NewLog create an new Log instance
 // for better performance, caller should be provided by upper
 func NewLog(level Level, pc uintptr, debugStack *string, format *string, args []interface{}, fields Fields) *Log {
 	var stack *Stack
