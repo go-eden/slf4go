@@ -1,14 +1,20 @@
 package slog
 
 import (
+	"github.com/stretchr/testify/assert"
+	"sync/atomic"
 	"testing"
 	"time"
 )
 
 func TestRegisterHook(t *testing.T) {
+	var count uint32
 	RegisterHook(func(log *Log) {
-		println(log)
+		t.Logf("hook: %v", log)
+		atomic.AddUint32(&count, 1)
 	})
+
+	SetLevel(TraceLevel)
 
 	log := GetLogger()
 	log.Trace("are you prety?", true)
@@ -23,6 +29,8 @@ func TestRegisterHook(t *testing.T) {
 	log.Error("what?")
 	log.Errorf("what?..$%s$", "XD")
 	log.Fatalf("import cycle not allowed! %s", "shit...")
-	log.Fatal("never reach here")
+	log.Fatal("never reach here?")
 	time.Sleep(time.Millisecond * 10)
+
+	assert.True(t, atomic.LoadUint32(&count) == 13, atomic.LoadUint32(&count))
 }
