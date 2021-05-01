@@ -66,11 +66,6 @@ func BenchmarkNewLog(b *testing.B) {
 	}
 }
 
-func TestLevel(t *testing.T) {
-	t.Log(FatalLevel.String())
-	t.Log(TraceLevel)
-}
-
 func TestTime(t *testing.T) {
 	var tv syscall.Timeval
 	_ = syscall.Gettimeofday(&tv)

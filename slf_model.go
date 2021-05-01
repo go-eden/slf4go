@@ -3,7 +3,6 @@ package slog
 import (
 	"github.com/go-eden/common/etime"
 	"github.com/go-eden/common/goid"
-	"strconv"
 )
 
 // Fields represents attached fileds of log
@@ -21,40 +20,6 @@ func NewFields(fields ...Fields) Fields {
 		}
 	}
 	return result
-}
-
-type Level int
-
-const (
-	TraceLevel Level = iota
-	DebugLevel
-	InfoLevel
-	WarnLevel
-	ErrorLevel
-	PanicLevel
-	FatalLevel
-)
-
-// String Retrieve Level's name
-func (l Level) String() string {
-	switch l {
-	case TraceLevel:
-		return "TRACE"
-	case DebugLevel:
-		return "DEBUG"
-	case InfoLevel:
-		return "INFO"
-	case WarnLevel:
-		return "WARN"
-	case ErrorLevel:
-		return "ERROR"
-	case PanicLevel:
-		return "PANIC"
-	case FatalLevel:
-		return "FATAL"
-	default:
-		return strconv.Itoa(int(l))
-	}
 }
 
 // Log represent an log, contains all properties.
