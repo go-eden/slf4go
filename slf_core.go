@@ -8,17 +8,18 @@ import (
 	"strings"
 )
 
-// the cached id of current process
-var pid = os.Getpid()
+const RootLoggerName = "root"
 
-// the start time of current process
-var startTime = etime.NowMicrosecond() - 1
+var (
+	context   string                       // the process name, useless
+	pid       = os.Getpid()                // the cached id of current process
+	startTime = etime.NowMicrosecond() - 1 // the start time of current process
 
-var context string       // the process name
-var globalDriver Driver  // the log driver
-var globalLevel Level    // global lowest level, will cover all driver's configuration
-var globalLogger *Logger // global default logger
-var globalHook = newHooks()
+	globalHook         = newHooks()
+	globalDriver       Driver       // the log driver
+	globalLogger       *Logger      // global default logger
+	globalLevelSetting LevelSetting // global setting
+)
 
 func init() {
 	exec := os.Args[0]
@@ -31,9 +32,9 @@ func init() {
 	// setup default driver
 	SetDriver(&StdDriver{})
 	// setup default logger
-	globalLogger = newLogger(nil)
+	globalLogger = newLogger(RootLoggerName)
 	// setup default level
-	globalLevel = TraceLevel
+	globalLevelSetting.setRootLevel(TraceLevel)
 }
 
 // SetContext update the global context name
@@ -52,8 +53,18 @@ func SetDriver(d Driver) {
 }
 
 // SetLevel update the global level, all lower level will not be send to driver to print
-func SetLevel(l Level) {
-	globalLevel = l
+func SetLevel(lv Level) {
+	globalLevelSetting.setRootLevel(lv)
+}
+
+// SetLoggerLevel setup log-level of the specified logger by name
+func SetLoggerLevel(loggerName string, level Level) {
+	globalLevelSetting.setLoggerLevel(map[string]Level{loggerName: level})
+}
+
+// SetLoggerLevelMap batch set logger's level
+func SetLoggerLevelMap(levelMap map[string]Level) {
+	globalLevelSetting.setLoggerLevel(levelMap)
 }
 
 // RegisterHook register a hook, all log will inform it
@@ -62,25 +73,25 @@ func RegisterHook(f func(*Log)) {
 }
 
 // GetLogger create new Logger by caller's package name
-func GetLogger() *Logger {
+func GetLogger() (l *Logger) {
 	var pc [1]uintptr
 	_ = runtime.Callers(2, pc[:])
 	s := ParseStack(pc[0])
-	var name = s.Package
-	if name == "" {
-		name = "-"
+	if name := s.Package; len(name) > 0 {
+		return newLogger(name)
 	}
-	return newLogger(&name)
+	Warnf("cannot parse package, use global logger")
+	return globalLogger
 }
 
 // NewLogger create new Logger by the specified name
 func NewLogger(name string) *Logger {
-	return newLogger(&name)
+	return newLogger(name)
 }
 
 // Trace record trace level's log
 func Trace(v ...interface{}) {
-	if globalLevel > TraceLevel {
+	if !globalLogger.IsTraceEnabled() {
 		return
 	}
 	var pc [1]uintptr
@@ -90,7 +101,7 @@ func Trace(v ...interface{}) {
 
 // Tracef record trace level's log with custom format.
 func Tracef(format string, v ...interface{}) {
-	if globalLevel > TraceLevel {
+	if !globalLogger.IsTraceEnabled() {
 		return
 	}
 	var pc [1]uintptr
@@ -100,7 +111,7 @@ func Tracef(format string, v ...interface{}) {
 
 // Debug record debug level's log
 func Debug(v ...interface{}) {
-	if globalLevel > DebugLevel {
+	if !globalLogger.IsDebugEnabled() {
 		return
 	}
 	var pc [1]uintptr
@@ -110,7 +121,7 @@ func Debug(v ...interface{}) {
 
 // Debugf record debug level's log with custom format.
 func Debugf(format string, v ...interface{}) {
-	if globalLevel > DebugLevel {
+	if !globalLogger.IsDebugEnabled() {
 		return
 	}
 	var pc [1]uintptr
@@ -120,7 +131,7 @@ func Debugf(format string, v ...interface{}) {
 
 // Info record info level's log
 func Info(v ...interface{}) {
-	if globalLevel > InfoLevel {
+	if !globalLogger.IsInfoEnabled() {
 		return
 	}
 	var pc [1]uintptr
@@ -130,7 +141,7 @@ func Info(v ...interface{}) {
 
 // Infof record info level's log with custom format.
 func Infof(format string, v ...interface{}) {
-	if globalLevel > InfoLevel {
+	if !globalLogger.IsInfoEnabled() {
 		return
 	}
 	var pc [1]uintptr
@@ -140,7 +151,7 @@ func Infof(format string, v ...interface{}) {
 
 // Warn record warn level's log
 func Warn(v ...interface{}) {
-	if globalLevel > WarnLevel {
+	if !globalLogger.IsWarnEnabled() {
 		return
 	}
 	var pc [1]uintptr
@@ -150,7 +161,7 @@ func Warn(v ...interface{}) {
 
 // Warnf record warn level's log with custom format.
 func Warnf(format string, v ...interface{}) {
-	if globalLevel > WarnLevel {
+	if !globalLogger.IsWarnEnabled() {
 		return
 	}
 	var pc [1]uintptr
@@ -160,7 +171,7 @@ func Warnf(format string, v ...interface{}) {
 
 // Error record error level's log
 func Error(v ...interface{}) {
-	if globalLevel > ErrorLevel {
+	if !globalLogger.IsErrorEnabled() {
 		return
 	}
 	var pc [1]uintptr
@@ -170,7 +181,7 @@ func Error(v ...interface{}) {
 
 // Errorf record error level's log with custom format.
 func Errorf(format string, v ...interface{}) {
-	if globalLevel > ErrorLevel {
+	if !globalLogger.IsErrorEnabled() {
 		return
 	}
 	var pc [1]uintptr
@@ -180,7 +191,7 @@ func Errorf(format string, v ...interface{}) {
 
 // Panic record panic level's log
 func Panic(v ...interface{}) {
-	if globalLevel > PanicLevel {
+	if !globalLogger.IsPanicEnabled() {
 		return
 	}
 	var pc [1]uintptr
@@ -191,7 +202,7 @@ func Panic(v ...interface{}) {
 
 // Panicf record panic level's log with custom format
 func Panicf(format string, v ...interface{}) {
-	if globalLevel > PanicLevel {
+	if !globalLogger.IsPanicEnabled() {
 		return
 	}
 	var pc [1]uintptr
@@ -202,7 +213,7 @@ func Panicf(format string, v ...interface{}) {
 
 // Fatal record fatal level's log
 func Fatal(v ...interface{}) {
-	if globalLevel > FatalLevel {
+	if !globalLogger.IsFatalEnabled() {
 		return
 	}
 	var pc [1]uintptr
@@ -213,7 +224,7 @@ func Fatal(v ...interface{}) {
 
 // Fatalf record fatal level's log with custom format.
 func Fatalf(format string, v ...interface{}) {
-	if globalLevel > FatalLevel {
+	if !globalLogger.IsFatalEnabled() {
 		return
 	}
 	var pc [1]uintptr

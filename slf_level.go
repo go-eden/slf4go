@@ -5,7 +5,7 @@ import (
 	"sync/atomic"
 )
 
-type Level int
+type Level int32
 
 const (
 	TraceLevel Level = iota
@@ -40,15 +40,18 @@ func (l Level) String() string {
 }
 
 type LevelSetting struct {
-	rootLevel Level
+	rootLevel int32
 	loggerMap atomic.Value // map[string]Level
 }
 
 func (t *LevelSetting) setRootLevel(l Level) {
-	t.rootLevel = l
+	atomic.StoreInt32(&t.rootLevel, int32(l))
 }
 
 func (t *LevelSetting) setLoggerLevel(levelMap map[string]Level) {
+	if rv, ok := levelMap[RootLoggerName]; ok {
+		t.setRootLevel(rv)
+	}
 	newSettings := map[string]Level{}
 	if tmp := t.loggerMap.Load(); tmp != nil {
 		for k, v := range tmp.(map[string]Level) {
@@ -62,11 +65,14 @@ func (t *LevelSetting) setLoggerLevel(levelMap map[string]Level) {
 }
 
 func (t *LevelSetting) getLoggerLevel(loggerName string) Level {
+	rl := Level(atomic.LoadInt32(&t.rootLevel))
+	if loggerName == RootLoggerName {
+		return rl
+	}
 	if m := t.loggerMap.Load(); m != nil {
-		v, ok := m.(map[string]Level)[loggerName]
-		if ok {
+		if v, ok := m.(map[string]Level)[loggerName]; ok {
 			return v
 		}
 	}
-	return t.rootLevel
+	return rl
 }

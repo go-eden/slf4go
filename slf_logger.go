@@ -8,27 +8,29 @@ import (
 
 // Logger wrap independent logger
 type Logger struct {
-	name   *string
+	name   string
 	fields atomic.Value // Fields
 }
 
-func newLogger(s *string) *Logger {
-	return &Logger{name: s}
+func newLogger(s string) *Logger {
+	l := &Logger{name: s}
+	l.fields.Store(Fields{})
+	return l
 }
 
 // Name obtain logger's name
 func (l *Logger) Name() string {
-	return *l.name
+	return l.name
 }
 
 // Level obtain logger's level, lower will not be print
 func (l *Logger) Level() Level {
-	dv := globalDriver.GetLevel(*l.name)
-	lv := globalLevelSetting.getLoggerLevel(*l.name)
-	if dv < lv {
-		dv = lv
+	result := globalDriver.GetLevel(l.name)
+	lv := globalLevelSetting.getLoggerLevel(l.name)
+	if result < lv {
+		result = lv
 	}
-	return dv
+	return result
 }
 
 // BindFields add the specified fields into the current Logger.
@@ -226,18 +228,14 @@ func (l *Logger) Fatalf(format string, v ...interface{}) {
 
 func (l *Logger) print(level Level, pc uintptr, stack *string, v ...interface{}) {
 	log := NewLog(level, pc, stack, nil, v, l.fields.Load().(Fields))
-	if l.name != nil {
-		log.Logger = *l.name
-	}
+	log.Logger = l.name
 	globalHook.broadcast(log)
 	globalDriver.Print(log)
 }
 
 func (l *Logger) printf(level Level, pc uintptr, stack *string, format string, v ...interface{}) {
 	log := NewLog(level, pc, stack, &format, v, l.fields.Load().(Fields))
-	if l.name != nil {
-		log.Logger = *l.name
-	}
+	log.Logger = l.name
 	globalHook.broadcast(log)
 	globalDriver.Print(log)
 }

@@ -1,6 +1,8 @@
 package slog
 
 import (
+	"github.com/stretchr/testify/assert"
+	"sync/atomic"
 	"testing"
 	"time"
 )
@@ -53,4 +55,50 @@ func TestNewLogger(t *testing.T) {
 	log.Fatal("fatal")
 
 	log.Warn(GetContext())
+}
+
+func TestLoggerLevelFilter(t *testing.T) {
+	SetLevel(WarnLevel)
+	SetLoggerLevel("debug", DebugLevel)
+	SetLoggerLevelMap(map[string]Level{
+		"info":  InfoLevel,
+		"error": ErrorLevel,
+	})
+
+	debugLog := NewLogger("debug")
+	infoLog := NewLogger("info")
+	errorLog := NewLogger("error")
+	tmpLog := NewLogger("xxxxx")
+
+	var debugCount, infoCount, errorCount int32
+	RegisterHook(func(log *Log) {
+		switch log.Level {
+		case DebugLevel:
+			atomic.AddInt32(&debugCount, 1)
+		case InfoLevel:
+			atomic.AddInt32(&infoCount, 1)
+		case ErrorLevel:
+			atomic.AddInt32(&errorCount, 1)
+		}
+	})
+
+	debugLog.Trace("debug.trace, invisible")
+	debugLog.Debug("debug.debug, visible")
+
+	infoLog.Debug("info.debug, invisible")
+	infoLog.Info("info.info, visible")
+	infoLog.Error("info.error, visible")
+
+	errorLog.Info("error.info, invisible")
+	errorLog.Warn("error.warn, invisble")
+	errorLog.Error("error.error, visible")
+
+	tmpLog.Info("tmp.info, invisible")
+	tmpLog.Warn("tmp.warn, visible")
+	tmpLog.Error("tmp.error, visible")
+
+	time.Sleep(time.Millisecond)
+	assert.True(t, atomic.LoadInt32(&debugCount) == 1, atomic.LoadInt32(&debugCount))
+	assert.True(t, atomic.LoadInt32(&infoCount) == 1)
+	assert.True(t, atomic.LoadInt32(&errorCount) == 3)
 }
