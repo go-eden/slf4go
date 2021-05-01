@@ -3,14 +3,13 @@ package slog
 import (
 	"runtime"
 	"runtime/debug"
-	"sync"
+	"sync/atomic"
 )
 
 // Logger wrap independent logger
 type Logger struct {
-	sync.Mutex
 	name   *string
-	fields Fields
+	fields atomic.Value // Fields
 }
 
 func newLogger(s *string) *Logger {
@@ -24,26 +23,25 @@ func (l *Logger) Name() string {
 
 // Level obtain logger's level, lower will not be print
 func (l *Logger) Level() Level {
-	r := globalDriver.GetLevel(*l.name)
-	if r < globalLevel {
-		r = globalLevel
+	dv := globalDriver.GetLevel(*l.name)
+	lv := globalLevelSetting.getLoggerLevel(*l.name)
+	if dv < lv {
+		dv = lv
 	}
-	return r
+	return dv
 }
 
 // BindFields add the specified fields into the current Logger.
 func (l *Logger) BindFields(fields Fields) {
-	l.Lock()
-	l.fields = NewFields(l.fields, fields)
-	l.Unlock()
+	oldFields := l.fields.Load().(Fields)
+	l.fields.Store(NewFields(oldFields, fields))
 }
 
 // WithFields derive an new Logger by the specified fields from the current Logger.
 func (l *Logger) WithFields(fields Fields) *Logger {
-	l.Lock()
+	oldFields := l.fields.Load().(Fields)
 	result := newLogger(l.name)
-	result.BindFields(NewFields(l.fields, fields))
-	l.Unlock()
+	result.BindFields(NewFields(oldFields, fields))
 	return result
 }
 
@@ -227,7 +225,7 @@ func (l *Logger) Fatalf(format string, v ...interface{}) {
 }
 
 func (l *Logger) print(level Level, pc uintptr, stack *string, v ...interface{}) {
-	log := NewLog(level, pc, stack, nil, v, l.fields)
+	log := NewLog(level, pc, stack, nil, v, l.fields.Load().(Fields))
 	if l.name != nil {
 		log.Logger = *l.name
 	}
@@ -236,7 +234,7 @@ func (l *Logger) print(level Level, pc uintptr, stack *string, v ...interface{})
 }
 
 func (l *Logger) printf(level Level, pc uintptr, stack *string, format string, v ...interface{}) {
-	log := NewLog(level, pc, stack, &format, v, l.fields)
+	log := NewLog(level, pc, stack, &format, v, l.fields.Load().(Fields))
 	if l.name != nil {
 		log.Logger = *l.name
 	}
