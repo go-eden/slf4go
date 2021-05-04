@@ -37,7 +37,7 @@ func BenchmarkLogger(b *testing.B) {
 	}
 }
 
-// BenchmarkDefaultLogger-12    	 3000000	       429 ns/op	     112 B/op	       2 allocs/op
+// BenchmarkDefaultLogger-12    	 2475452	       419.4 ns/op	     128 B/op	       2 allocs/op
 func BenchmarkDefaultLogger(b *testing.B) {
 	SetDriver(new(NilDriver))
 
@@ -48,7 +48,7 @@ func BenchmarkDefaultLogger(b *testing.B) {
 	}
 }
 
-// BenchmarkLoggerIsEnable-12    	2000000000	         1.56 ns/op	       0 B/op	       0 allocs/op
+// BenchmarkLoggerIsEnable-12    	201168616	         5.842 ns/op	       0 B/op	       0 allocs/op
 func BenchmarkLoggerIsEnable(b *testing.B) {
 	SetDriver(new(NilDriver))
 	log := GetLogger()

@@ -74,6 +74,18 @@ func TestLoggerIsEnabled(t *testing.T) {
 	}
 }
 
+// BenchmarkLoggerIsEnabled-12    	85532004	        14.14 ns/op
+func BenchmarkLoggerIsEnabled(b *testing.B) {
+	SetLevel(WarnLevel)
+	SetLoggerLevel("abc", InfoLevel)
+	SetLoggerLevel("xyz", TraceLevel)
+
+	l := NewLogger("abc")
+	for i := 0; i < b.N; i++ {
+		_ = l.IsInfoEnabled()
+	}
+}
+
 // BenchmarkCast-12    	2000000000	         0.26 ns/op	       0 B/op	       0 allocs/op
 func BenchmarkCast(b *testing.B) {
 	var h interface{} = "hello"

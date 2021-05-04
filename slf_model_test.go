@@ -4,7 +4,6 @@ import (
 	"github.com/go-eden/common/goid"
 	"os"
 	"runtime"
-	"syscall"
 	"testing"
 	"time"
 )
@@ -63,33 +62,5 @@ func BenchmarkNewLog(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		_ = runtime.Callers(2, pc[:])
 		NewLog(TraceLevel, pc[0], nil, nil, nil, nil)
-	}
-}
-
-func TestTime(t *testing.T) {
-	var tv syscall.Timeval
-	_ = syscall.Gettimeofday(&tv)
-	us := int64(tv.Sec)*1e6 + int64(tv.Usec)
-	t.Log(us)
-	t.Log(time.Now().UnixNano())
-}
-
-// BenchmarkSyscallTime-12    	30000000	        39.9 ns/op	       0 B/op	       0 allocs/op
-func BenchmarkSyscallTime(b *testing.B) {
-	b.ReportAllocs()
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		var tv syscall.Timeval
-		_ = syscall.Gettimeofday(&tv)
-		_ = int64(tv.Sec)*1e6 + int64(tv.Usec)
-	}
-}
-
-// BenchmarkTime-12    	20000000	        67.9 ns/op	       0 B/op	       0 allocs/op
-func BenchmarkTime(b *testing.B) {
-	b.ReportAllocs()
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		_ = time.Now().UnixNano()
 	}
 }
