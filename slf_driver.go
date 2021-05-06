@@ -7,21 +7,6 @@ import (
 	"time"
 )
 
-// Driver define the standard log print specification
-type Driver interface {
-
-	// Name return the name of current driver, like 'default', 'logrus'...
-	Name() string
-
-	// Print responsible of printing the standard Log
-	Print(l *Log)
-
-	// GetLevel return log level of the specified logger,
-	// it should return the lowest Level that could be print,
-	// which can help invoker to decide whether prepare print or not.
-	GetLevel(logger string) Level
-}
-
 // StdDriver The default driver, just print stdout directly
 type StdDriver struct {
 	sync.Mutex

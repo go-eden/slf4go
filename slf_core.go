@@ -8,8 +8,6 @@ import (
 	"strings"
 )
 
-const RootLoggerName = "root"
-
 var (
 	context   string                       // the process name, useless
 	pid       = os.Getpid()                // the cached id of current process
@@ -17,8 +15,8 @@ var (
 
 	globalHook         = newHooks()
 	globalDriver       Driver       // the log driver
-	globalLogger       *Logger      // global default logger
 	globalLevelSetting LevelSetting // global setting
+	globalLogger       *logger      // global default logger
 )
 
 func init() {
@@ -32,7 +30,7 @@ func init() {
 	// setup default driver
 	SetDriver(&StdDriver{})
 	// setup default logger
-	globalLogger = newLogger(RootLoggerName)
+	globalLogger = newLogger(RootLoggerName).(*logger)
 	// setup default level
 	globalLevelSetting.setRootLevel(TraceLevel)
 }
@@ -73,7 +71,7 @@ func RegisterHook(f func(*Log)) {
 }
 
 // GetLogger create new Logger by caller's package name
-func GetLogger() (l *Logger) {
+func GetLogger() (l Logger) {
 	var pc [1]uintptr
 	_ = runtime.Callers(2, pc[:])
 	s := ParseStack(pc[0])
@@ -85,11 +83,11 @@ func GetLogger() (l *Logger) {
 }
 
 // NewLogger create new Logger by the specified name
-func NewLogger(name string) *Logger {
+func NewLogger(name string) Logger {
 	return newLogger(name)
 }
 
-// Trace record trace level's log
+// Trace reference Logger.Trace
 func Trace(v ...interface{}) {
 	if !globalLogger.IsTraceEnabled() {
 		return
@@ -99,7 +97,7 @@ func Trace(v ...interface{}) {
 	globalLogger.print(TraceLevel, pc[0], nil, v...)
 }
 
-// Tracef record trace level's log with custom format.
+// Tracef reference Logger.Tracef
 func Tracef(format string, v ...interface{}) {
 	if !globalLogger.IsTraceEnabled() {
 		return
@@ -109,7 +107,7 @@ func Tracef(format string, v ...interface{}) {
 	globalLogger.printf(TraceLevel, pc[0], nil, format, v...)
 }
 
-// Debug record debug level's log
+// Debug reference Logger.Debug
 func Debug(v ...interface{}) {
 	if !globalLogger.IsDebugEnabled() {
 		return
@@ -119,7 +117,7 @@ func Debug(v ...interface{}) {
 	globalLogger.print(DebugLevel, pc[0], nil, v...)
 }
 
-// Debugf record debug level's log with custom format.
+// Debugf reference Logger.Debugf
 func Debugf(format string, v ...interface{}) {
 	if !globalLogger.IsDebugEnabled() {
 		return
@@ -129,7 +127,7 @@ func Debugf(format string, v ...interface{}) {
 	globalLogger.printf(DebugLevel, pc[0], nil, format, v...)
 }
 
-// Info record info level's log
+// Info reference Logger.Info
 func Info(v ...interface{}) {
 	if !globalLogger.IsInfoEnabled() {
 		return
@@ -139,7 +137,7 @@ func Info(v ...interface{}) {
 	globalLogger.print(InfoLevel, pc[0], nil, v...)
 }
 
-// Infof record info level's log with custom format.
+// Infof reference Logger.Infof
 func Infof(format string, v ...interface{}) {
 	if !globalLogger.IsInfoEnabled() {
 		return
@@ -149,7 +147,7 @@ func Infof(format string, v ...interface{}) {
 	globalLogger.printf(InfoLevel, pc[0], nil, format, v...)
 }
 
-// Warn record warn level's log
+// Warn reference Logger.Warn
 func Warn(v ...interface{}) {
 	if !globalLogger.IsWarnEnabled() {
 		return
@@ -159,7 +157,7 @@ func Warn(v ...interface{}) {
 	globalLogger.print(WarnLevel, pc[0], nil, v...)
 }
 
-// Warnf record warn level's log with custom format.
+// Warnf reference Logger.Warnf
 func Warnf(format string, v ...interface{}) {
 	if !globalLogger.IsWarnEnabled() {
 		return
@@ -169,7 +167,7 @@ func Warnf(format string, v ...interface{}) {
 	globalLogger.printf(WarnLevel, pc[0], nil, format, v...)
 }
 
-// Error record error level's log
+// Error reference Logger.Error
 func Error(v ...interface{}) {
 	if !globalLogger.IsErrorEnabled() {
 		return
@@ -179,7 +177,7 @@ func Error(v ...interface{}) {
 	globalLogger.print(ErrorLevel, pc[0], nil, v...)
 }
 
-// Errorf record error level's log with custom format.
+// Errorf reference Logger.Errorf
 func Errorf(format string, v ...interface{}) {
 	if !globalLogger.IsErrorEnabled() {
 		return
@@ -189,7 +187,7 @@ func Errorf(format string, v ...interface{}) {
 	globalLogger.printf(ErrorLevel, pc[0], nil, format, v...)
 }
 
-// Panic record panic level's log
+// Panic reference Logger.Panic
 func Panic(v ...interface{}) {
 	if !globalLogger.IsPanicEnabled() {
 		return
@@ -200,7 +198,7 @@ func Panic(v ...interface{}) {
 	globalLogger.print(PanicLevel, pc[0], &stack, v...)
 }
 
-// Panicf record panic level's log with custom format
+// Panicf reference Logger.Panicf
 func Panicf(format string, v ...interface{}) {
 	if !globalLogger.IsPanicEnabled() {
 		return
@@ -211,7 +209,7 @@ func Panicf(format string, v ...interface{}) {
 	globalLogger.printf(PanicLevel, pc[0], &stack, format, v...)
 }
 
-// Fatal record fatal level's log
+// Fatal reference Logger.Fatal
 func Fatal(v ...interface{}) {
 	if !globalLogger.IsFatalEnabled() {
 		return
@@ -222,7 +220,7 @@ func Fatal(v ...interface{}) {
 	globalLogger.print(FatalLevel, pc[0], &stack, v...)
 }
 
-// Fatalf record fatal level's log with custom format.
+// Fatalf reference Logger.Fatalf
 func Fatalf(format string, v ...interface{}) {
 	if !globalLogger.IsFatalEnabled() {
 		return

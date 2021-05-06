@@ -6,25 +6,23 @@ import (
 	"sync/atomic"
 )
 
-// Logger wrap independent logger
-type Logger struct {
+type logger struct {
 	name   string
 	fields atomic.Value // Fields
 }
 
-func newLogger(s string) *Logger {
-	l := &Logger{name: s}
+func newLogger(s string) Logger {
+	l := &logger{name: s}
 	l.fields.Store(Fields{})
 	return l
 }
 
 // Name obtain logger's name
-func (l *Logger) Name() string {
+func (l *logger) Name() string {
 	return l.name
 }
 
-// Level obtain logger's level, lower will not be print
-func (l *Logger) Level() Level {
+func (l *logger) Level() Level {
 	result := globalDriver.GetLevel(l.name)
 	lv := globalLevelSetting.getLoggerLevel(l.name)
 	if result < lv {
@@ -33,57 +31,47 @@ func (l *Logger) Level() Level {
 	return result
 }
 
-// BindFields add the specified fields into the current Logger.
-func (l *Logger) BindFields(fields Fields) {
+func (l *logger) BindFields(fields Fields) {
 	oldFields := l.fields.Load().(Fields)
 	l.fields.Store(NewFields(oldFields, fields))
 }
 
-// WithFields derive an new Logger by the specified fields from the current Logger.
-func (l *Logger) WithFields(fields Fields) *Logger {
+func (l *logger) WithFields(fields Fields) Logger {
 	oldFields := l.fields.Load().(Fields)
 	result := newLogger(l.name)
 	result.BindFields(NewFields(oldFields, fields))
 	return result
 }
 
-// IsTraceEnabled Whether trace of current logger enabled or not
-func (l *Logger) IsTraceEnabled() bool {
+func (l *logger) IsTraceEnabled() bool {
 	return l.Level() <= TraceLevel
 }
 
-// IsDebugEnabled Whether debug of current logger enabled or not
-func (l *Logger) IsDebugEnabled() bool {
+func (l *logger) IsDebugEnabled() bool {
 	return l.Level() <= DebugLevel
 }
 
-// IsInfoEnabled Whether info of current logger enabled or not
-func (l *Logger) IsInfoEnabled() bool {
+func (l *logger) IsInfoEnabled() bool {
 	return l.Level() <= InfoLevel
 }
 
-// IsWarnEnabled Whether warn of current logger enabled or not
-func (l *Logger) IsWarnEnabled() bool {
+func (l *logger) IsWarnEnabled() bool {
 	return l.Level() <= WarnLevel
 }
 
-// IsErrorEnabled Whether error of current logger enabled or not
-func (l *Logger) IsErrorEnabled() bool {
+func (l *logger) IsErrorEnabled() bool {
 	return l.Level() <= ErrorLevel
 }
 
-// IsPanicEnabled Whether panic of current logger enabled or not
-func (l *Logger) IsPanicEnabled() bool {
+func (l *logger) IsPanicEnabled() bool {
 	return l.Level() <= PanicLevel
 }
 
-// IsFatalEnabled Whether fatal of current logger enabled or not
-func (l *Logger) IsFatalEnabled() bool {
+func (l *logger) IsFatalEnabled() bool {
 	return l.Level() <= FatalLevel
 }
 
-// Trace record trace level's log
-func (l *Logger) Trace(v ...interface{}) {
+func (l *logger) Trace(v ...interface{}) {
 	if !l.IsTraceEnabled() {
 		return // don't need log
 	}
@@ -92,8 +80,7 @@ func (l *Logger) Trace(v ...interface{}) {
 	l.print(TraceLevel, pc[0], nil, v...)
 }
 
-// Tracef record trace level's log with custom format.
-func (l *Logger) Tracef(format string, v ...interface{}) {
+func (l *logger) Tracef(format string, v ...interface{}) {
 	if !l.IsTraceEnabled() {
 		return // don't need log
 	}
@@ -102,8 +89,7 @@ func (l *Logger) Tracef(format string, v ...interface{}) {
 	l.printf(TraceLevel, pc[0], nil, format, v...)
 }
 
-// Debug record debug level's log
-func (l *Logger) Debug(v ...interface{}) {
+func (l *logger) Debug(v ...interface{}) {
 	if !l.IsDebugEnabled() {
 		return // don't need log
 	}
@@ -112,8 +98,7 @@ func (l *Logger) Debug(v ...interface{}) {
 	l.print(DebugLevel, pc[0], nil, v...)
 }
 
-// Debugf record debug level's log with custom format.
-func (l *Logger) Debugf(format string, v ...interface{}) {
+func (l *logger) Debugf(format string, v ...interface{}) {
 	if !l.IsDebugEnabled() {
 		return // don't need log
 	}
@@ -122,8 +107,7 @@ func (l *Logger) Debugf(format string, v ...interface{}) {
 	l.printf(DebugLevel, pc[0], nil, format, v...)
 }
 
-// Info record info level's log
-func (l *Logger) Info(v ...interface{}) {
+func (l *logger) Info(v ...interface{}) {
 	if !l.IsInfoEnabled() {
 		return // don't need log
 	}
@@ -132,8 +116,7 @@ func (l *Logger) Info(v ...interface{}) {
 	l.print(InfoLevel, pc[0], nil, v...)
 }
 
-// Infof record info level's log with custom format.
-func (l *Logger) Infof(format string, v ...interface{}) {
+func (l *logger) Infof(format string, v ...interface{}) {
 	if !l.IsInfoEnabled() {
 		return // don't need log
 	}
@@ -142,8 +125,7 @@ func (l *Logger) Infof(format string, v ...interface{}) {
 	l.printf(InfoLevel, pc[0], nil, format, v...)
 }
 
-// Warn record warn level's log
-func (l *Logger) Warn(v ...interface{}) {
+func (l *logger) Warn(v ...interface{}) {
 	if !l.IsWarnEnabled() {
 		return // don't need log
 	}
@@ -152,8 +134,7 @@ func (l *Logger) Warn(v ...interface{}) {
 	l.print(WarnLevel, pc[0], nil, v...)
 }
 
-// Warnf record warn level's log with custom format.
-func (l *Logger) Warnf(format string, v ...interface{}) {
+func (l *logger) Warnf(format string, v ...interface{}) {
 	if !l.IsWarnEnabled() {
 		return // don't need log
 	}
@@ -162,8 +143,7 @@ func (l *Logger) Warnf(format string, v ...interface{}) {
 	l.printf(WarnLevel, pc[0], nil, format, v...)
 }
 
-// Error record error level's log
-func (l *Logger) Error(v ...interface{}) {
+func (l *logger) Error(v ...interface{}) {
 	if !l.IsErrorEnabled() {
 		return // don't need log
 	}
@@ -172,8 +152,7 @@ func (l *Logger) Error(v ...interface{}) {
 	l.print(ErrorLevel, pc[0], nil, v...)
 }
 
-// Errorf record error level's log with custom format.
-func (l *Logger) Errorf(format string, v ...interface{}) {
+func (l *logger) Errorf(format string, v ...interface{}) {
 	if !l.IsErrorEnabled() {
 		return // don't need log
 	}
@@ -182,8 +161,7 @@ func (l *Logger) Errorf(format string, v ...interface{}) {
 	l.printf(ErrorLevel, pc[0], nil, format, v...)
 }
 
-// Panic record panic level's log
-func (l *Logger) Panic(v ...interface{}) {
+func (l *logger) Panic(v ...interface{}) {
 	if !l.IsPanicEnabled() {
 		return // don't need log
 	}
@@ -193,8 +171,7 @@ func (l *Logger) Panic(v ...interface{}) {
 	l.print(FatalLevel, pc[0], &stack, v...)
 }
 
-// Panicf record panic level's log with custom format
-func (l *Logger) Panicf(format string, v ...interface{}) {
+func (l *logger) Panicf(format string, v ...interface{}) {
 	if !l.IsPanicEnabled() {
 		return // don't need log
 	}
@@ -204,8 +181,7 @@ func (l *Logger) Panicf(format string, v ...interface{}) {
 	l.printf(ErrorLevel, pc[0], &stack, format, v...)
 }
 
-// Fatal record fatal level's log
-func (l *Logger) Fatal(v ...interface{}) {
+func (l *logger) Fatal(v ...interface{}) {
 	if !l.IsFatalEnabled() {
 		return // don't need log
 	}
@@ -215,8 +191,7 @@ func (l *Logger) Fatal(v ...interface{}) {
 	l.print(FatalLevel, pc[0], &stack, v...)
 }
 
-// Fatalf record fatal level's log with custom format.
-func (l *Logger) Fatalf(format string, v ...interface{}) {
+func (l *logger) Fatalf(format string, v ...interface{}) {
 	if !l.IsFatalEnabled() {
 		return // don't need log
 	}
@@ -226,14 +201,14 @@ func (l *Logger) Fatalf(format string, v ...interface{}) {
 	l.printf(FatalLevel, pc[0], &stack, format, v...)
 }
 
-func (l *Logger) print(level Level, pc uintptr, stack *string, v ...interface{}) {
+func (l *logger) print(level Level, pc uintptr, stack *string, v ...interface{}) {
 	log := NewLog(level, pc, stack, nil, v, l.fields.Load().(Fields))
 	log.Logger = l.name
 	globalHook.broadcast(log)
 	globalDriver.Print(log)
 }
 
-func (l *Logger) printf(level Level, pc uintptr, stack *string, format string, v ...interface{}) {
+func (l *logger) printf(level Level, pc uintptr, stack *string, format string, v ...interface{}) {
 	log := NewLog(level, pc, stack, &format, v, l.fields.Load().(Fields))
 	log.Logger = l.name
 	globalHook.broadcast(log)
