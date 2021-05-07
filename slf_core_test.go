@@ -27,6 +27,7 @@ func TestGetLogger(t *testing.T) {
 }
 
 func TestDefaultLogger(t *testing.T) {
+	SetLevel(TraceLevel)
 	Trace("are you prety?", true)
 	Debugf("are you prety? %t", true)
 	Debug("okkkkkk")
@@ -42,6 +43,7 @@ func TestDefaultLogger(t *testing.T) {
 	Panic("panic")
 	Fatalf("import cycle not allowed! %s", "shit...")
 	Fatal("never reach here")
+	time.Sleep(time.Millisecond * 10)
 }
 
 func TestNewLogger(t *testing.T) {
@@ -101,4 +103,22 @@ func TestLoggerLevelFilter(t *testing.T) {
 	assert.True(t, atomic.LoadInt32(&debugCount) == 1, atomic.LoadInt32(&debugCount))
 	assert.True(t, atomic.LoadInt32(&infoCount) == 1)
 	assert.True(t, atomic.LoadInt32(&errorCount) == 3)
+}
+
+func TestConcurrency(t *testing.T) {
+	log := NewLogger("concurrency")
+	globalDriver.Load().(*StdDriver).stdout = nil
+
+	const threadNum = 64
+	for i := 0; i < threadNum; i++ {
+		threadId := i
+		go func() {
+			for x := 0; x < 1000; x++ {
+				log.Infof("threadId=%v, seq=%d", threadId, x)
+				log.Error(threadId, x, " xxxxxxxxxxxxxxxx")
+				time.Sleep(time.Microsecond * 100)
+			}
+		}()
+	}
+	time.Sleep(time.Second)
 }

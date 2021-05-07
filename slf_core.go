@@ -6,6 +6,7 @@ import (
 	"runtime"
 	"runtime/debug"
 	"strings"
+	"sync/atomic"
 )
 
 var (
@@ -14,9 +15,9 @@ var (
 	startTime = etime.NowMicrosecond() - 1 // the start time of current process
 
 	globalHook         = newHooks()
-	globalDriver       Driver       // the log driver
-	globalLevelSetting LevelSetting // global setting
 	globalLogger       *logger      // global default logger
+	globalDriver       atomic.Value // global driver
+	globalLevelSetting LevelSetting // global setting
 )
 
 func init() {
@@ -28,9 +29,9 @@ func init() {
 	// setup default context
 	SetContext(exec)
 	// setup default driver
-	SetDriver(&StdDriver{})
+	SetDriver(newStdDriver(stdBufSize))
 	// setup default logger
-	globalLogger = newLogger(RootLoggerName).(*logger)
+	globalLogger = newLogger(rootLoggerName).(*logger)
 	// setup default level
 	globalLevelSetting.setRootLevel(TraceLevel)
 }
@@ -47,7 +48,13 @@ func GetContext() string {
 
 // SetDriver update the global log driver
 func SetDriver(d Driver) {
-	globalDriver = d
+	var replacedDriver = globalDriver.Load()
+	globalDriver.Store(d)
+
+	// close old driver
+	if tmp, ok := replacedDriver.(*StdDriver); ok {
+		tmp.close()
+	}
 }
 
 // SetLevel update the global level, all lower level will not be send to driver to print

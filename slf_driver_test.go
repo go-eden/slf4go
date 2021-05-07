@@ -4,20 +4,6 @@ import (
 	"testing"
 )
 
-type NilDriver struct {
-}
-
-func (*NilDriver) Name() string {
-	return ""
-}
-
-func (*NilDriver) Print(_ *Log) {
-}
-
-func (*NilDriver) GetLevel(_ string) Level {
-	return TraceLevel
-}
-
 func TestNilDriver(t *testing.T) {
 	SetDriver(new(NilDriver))
 
@@ -48,14 +34,38 @@ func BenchmarkDefaultLogger(b *testing.B) {
 	}
 }
 
-// BenchmarkLoggerIsEnable-12    	201168616	         5.842 ns/op	       0 B/op	       0 allocs/op
-func BenchmarkLoggerIsEnable(b *testing.B) {
-	SetDriver(new(NilDriver))
+// when use channel(lots of [WARNING: log lost, channel is full])
+// BenchmarkStdDriverChannel-12    	 1389292	       923.8 ns/op	     277 B/op	       9 allocs/op
+// BenchmarkStdDriverChannel-12    	 1507141	       793.6 ns/op	     256 B/op	       8 allocs/op
+// when bufsize==1M(no log lost)
+// BenchmarkStdDriverChannel-12    	 1789503	       655.5 ns/op	     236 B/op	       7 allocs/op
+// when asyncPrint do nothing
+// BenchmarkStdDriverChannel-12    	 1638012	       728.1 ns/op	     144 B/op	       3 allocs/op
+func BenchmarkStdDriverChannel(b *testing.B) {
+	d := newStdDriver(1 << 12).(*StdDriver)
+	d.stdout = nil
+	SetDriver(d)
 	log := GetLogger()
 
-	b.ResetTimer()
 	b.ReportAllocs()
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		log.IsInfoEnabled()
+		log.Infof("hello world....%v", 1234.1)
 	}
+}
+
+// --------------------------------
+
+type NilDriver struct {
+}
+
+func (*NilDriver) Name() string {
+	return ""
+}
+
+func (*NilDriver) Print(_ *Log) {
+}
+
+func (*NilDriver) GetLevel(_ string) Level {
+	return TraceLevel
 }

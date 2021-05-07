@@ -23,7 +23,7 @@ func (l *logger) Name() string {
 }
 
 func (l *logger) Level() Level {
-	result := globalDriver.GetLevel(l.name)
+	result := globalDriver.Load().(Driver).GetLevel(l.name)
 	lv := globalLevelSetting.getLoggerLevel(l.name)
 	if result < lv {
 		result = lv
@@ -205,12 +205,12 @@ func (l *logger) print(level Level, pc uintptr, stack *string, v ...interface{})
 	log := NewLog(level, pc, stack, nil, v, l.fields.Load().(Fields))
 	log.Logger = l.name
 	globalHook.broadcast(log)
-	globalDriver.Print(log)
+	globalDriver.Load().(Driver).Print(log)
 }
 
 func (l *logger) printf(level Level, pc uintptr, stack *string, format string, v ...interface{}) {
 	log := NewLog(level, pc, stack, &format, v, l.fields.Load().(Fields))
 	log.Logger = l.name
 	globalHook.broadcast(log)
-	globalDriver.Print(log)
+	globalDriver.Load().(Driver).Print(log)
 }
