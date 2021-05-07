@@ -48,13 +48,20 @@ func GetContext() string {
 
 // SetDriver update the global log driver
 func SetDriver(d Driver) {
-	var replacedDriver = globalDriver.Load()
-	globalDriver.Store(d)
+	replacedDriver := globalDriver.Load()
+	globalDriver.Store(&d)
 
 	// close old driver
-	if tmp, ok := replacedDriver.(*StdDriver); ok {
-		tmp.close()
+	if replacedDriver != nil {
+		tmp := *(replacedDriver.(*Driver))
+		if tmp, ok := tmp.(*StdDriver); ok {
+			tmp.close()
+		}
 	}
+}
+
+func getDriver() Driver {
+	return *globalDriver.Load().(*Driver)
 }
 
 // SetLevel update the global level, all lower level will not be send to driver to print

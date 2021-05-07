@@ -5,7 +5,8 @@ import (
 )
 
 func TestNilDriver(t *testing.T) {
-	SetDriver(new(NilDriver))
+	d := &NilDriver{}
+	SetDriver(d)
 
 	log := GetLogger()
 	log.Info("what???")
@@ -34,15 +35,12 @@ func BenchmarkDefaultLogger(b *testing.B) {
 	}
 }
 
-// when use channel(lots of [WARNING: log lost, channel is full])
-// BenchmarkStdDriverChannel-12    	 1389292	       923.8 ns/op	     277 B/op	       9 allocs/op
-// BenchmarkStdDriverChannel-12    	 1507141	       793.6 ns/op	     256 B/op	       8 allocs/op
-// when bufsize==1M(no log lost)
-// BenchmarkStdDriverChannel-12    	 1789503	       655.5 ns/op	     236 B/op	       7 allocs/op
-// when asyncPrint do nothing
+// use ring slice
 // BenchmarkStdDriverChannel-12    	 1638012	       728.1 ns/op	     144 B/op	       3 allocs/op
+// use channel again
+// BenchmarkStdDriverChannel-12    	 1433360	       822.1 ns/op	     168 B/op	       4 allocs/op
 func BenchmarkStdDriverChannel(b *testing.B) {
-	d := newStdDriver(1 << 12).(*StdDriver)
+	d := newStdDriver(1 << 12)
 	d.stdout = nil
 	SetDriver(d)
 	log := GetLogger()

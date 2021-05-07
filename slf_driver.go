@@ -1,49 +1,38 @@
 package slog
 
 import (
+	"fmt"
 	"github.com/go-eden/common/efmt"
 	"io"
-	"math"
 	"os"
 	"runtime/debug"
-	"sync/atomic"
 	"time"
 )
 
 type immutableLog struct {
-	printer efmt.Printer
-
-	Time       int64
+	Time       int64 // -1 means EOF
 	Logger     string
 	Pid        int
 	Gid        int
 	Stack      *Stack
 	Fields     Fields
 	Level      Level
-	Msg        []byte
+	Msg        string
 	DebugStack *string
 }
 
 // StdDriver The default driver, just print stdout directly
 type StdDriver struct {
-	stdout io.Writer
-	errout io.Writer
-	count  int32
-	offset int64
-	border int64
-	signal chan bool
-	buffer []immutableLog
+	stdout  io.Writer
+	errout  io.Writer
+	channel chan immutableLog
 }
 
-func newStdDriver(bufsize int32) Driver {
+func newStdDriver(bufsize int32) *StdDriver {
 	t := &StdDriver{
-		stdout: os.Stdout,
-		errout: os.Stderr,
-		count:  0,
-		offset: -1,
-		border: int64(bufsize - 1),
-		signal: make(chan bool, 2),
-		buffer: make([]immutableLog, bufsize),
+		stdout:  os.Stdout,
+		errout:  os.Stderr,
+		channel: make(chan immutableLog, bufsize),
 	}
 
 	go t.asyncPrint()
@@ -56,45 +45,29 @@ func (t *StdDriver) Name() string {
 }
 
 func (t *StdDriver) Print(l *Log) {
-	if atomic.LoadInt32(&t.count) < 0 {
-		return // if closed
+	iLog := immutableLog{
+		Time:       l.Time,
+		Logger:     l.Logger,
+		Pid:        l.Pid,
+		Gid:        l.Gid,
+		Stack:      l.Stack,
+		Fields:     l.Fields,
+		Level:      l.Level,
+		DebugStack: l.DebugStack,
 	}
-
-	// allocate next offset
-	var off int64
-	for {
-		tmp := atomic.LoadInt64(&t.offset)
-		if tmp >= atomic.LoadInt64(&t.border) {
-			_, _ = t.errout.Write([]byte("WARNING: log lost, channel is full...\n"))
-			return
-		}
-		if atomic.CompareAndSwapInt64(&t.offset, tmp, tmp+1) {
-			off = tmp + 1
-			break
-		}
-	}
-
-	// write to buffer
-	iLog := &t.buffer[off%int64(len(t.buffer))]
-	iLog.Time = l.Time
-	iLog.Logger = l.Logger
-	iLog.Pid = l.Pid
-	iLog.Gid = l.Gid
-	iLog.Stack = l.Stack
-	iLog.Fields = l.Fields
-	iLog.Level = l.Level
-	iLog.DebugStack = l.DebugStack
 
 	// prepare message
 	if l.Format != nil {
-		iLog.Msg = iLog.printer.Sprintf(*l.Format, l.Args...)
+		iLog.Msg = fmt.Sprintf(*l.Format, l.Args...)
 	} else {
-		iLog.Msg = iLog.printer.Sprint(l.Args...)
+		iLog.Msg = fmt.Sprint(l.Args...)
 	}
 
 	// send signal when buffer is empty
-	if atomic.AddInt32(&t.count, 1) == 1 {
-		t.signal <- true
+	select {
+	case t.channel <- iLog:
+	default:
+		_, _ = t.errout.Write([]byte("WARNING: log lost, channel is full...\n"))
 	}
 }
 
@@ -110,17 +83,11 @@ func (t *StdDriver) asyncPrint() {
 		}
 	}()
 	var p efmt.Printer
-	for off := int64(0); ; off++ {
-		for {
-			if c := atomic.LoadInt32(&t.count); c == 0 {
-				<-t.signal
-			} else if c > 0 {
-				break
-			} else {
-				return // break if closed
-			}
+	for {
+		l, ok := <-t.channel
+		if !ok || l.Time == -1 {
+			return
 		}
-		l := &t.buffer[off%int64(len(t.buffer))]
 
 		// format and print log to stdout
 		if w := t.stdout; w != nil {
@@ -133,18 +100,10 @@ func (t *StdDriver) asyncPrint() {
 			}
 			_, _ = w.Write(body)
 		}
-		// clear memory
-		l.Stack = nil
-		l.Fields = nil
-		l.DebugStack = nil
-
-		// upgrade count and border
-		atomic.AddInt32(&t.count, -1)
-		atomic.AddInt64(&t.border, 1)
 	}
 }
 
+// close this driver
 func (t *StdDriver) close() {
-	atomic.StoreInt32(&t.count, math.MinInt16)
-	t.signal <- true
+	t.channel <- immutableLog{Time: -1}
 }

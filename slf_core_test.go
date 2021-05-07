@@ -107,7 +107,9 @@ func TestLoggerLevelFilter(t *testing.T) {
 
 func TestConcurrency(t *testing.T) {
 	log := NewLogger("concurrency")
-	globalDriver.Load().(*StdDriver).stdout = nil
+	d := newStdDriver(1 << 12)
+	d.stdout = nil
+	SetDriver(d)
 
 	const threadNum = 64
 	for i := 0; i < threadNum; i++ {

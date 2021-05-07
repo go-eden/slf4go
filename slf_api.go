@@ -2,7 +2,7 @@ package slog
 
 const (
 	rootLoggerName = "root"
-	stdBufSize     = 64
+	stdBufSize     = 1 << 10
 )
 
 // Driver define the standard log print specification
