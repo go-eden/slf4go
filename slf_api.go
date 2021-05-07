@@ -1,6 +1,9 @@
 package slog
 
-const RootLoggerName = "root"
+const (
+	rootLoggerName = "root"
+	stdBufSize     = 1 << 6
+)
 
 // Driver define the standard log print specification
 type Driver interface {

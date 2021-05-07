@@ -27,7 +27,7 @@ func TestLevelSetting(t *testing.T) {
 		FatalLevel.String(): FatalLevel,
 	})
 
-	assert.True(t, setting.getLoggerLevel(RootLoggerName) == WarnLevel)
+	assert.True(t, setting.getLoggerLevel(rootLoggerName) == WarnLevel)
 	assert.True(t, setting.getLoggerLevel(WarnLevel.String()) == WarnLevel)
 	assert.True(t, setting.getLoggerLevel(ErrorLevel.String()) == ErrorLevel)
 	assert.True(t, setting.getLoggerLevel("xxxx") == WarnLevel)

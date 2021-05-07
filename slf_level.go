@@ -49,7 +49,7 @@ func (t *LevelSetting) setRootLevel(l Level) {
 }
 
 func (t *LevelSetting) setLoggerLevel(levelMap map[string]Level) {
-	if rv, ok := levelMap[RootLoggerName]; ok {
+	if rv, ok := levelMap[rootLoggerName]; ok {
 		t.setRootLevel(rv)
 	}
 	newSettings := map[string]Level{}
@@ -66,7 +66,7 @@ func (t *LevelSetting) setLoggerLevel(levelMap map[string]Level) {
 
 func (t *LevelSetting) getLoggerLevel(loggerName string) Level {
 	rl := Level(atomic.LoadInt32(&t.rootLevel))
-	if loggerName == RootLoggerName {
+	if loggerName == rootLoggerName {
 		return rl
 	}
 	if m := t.loggerMap.Load(); m != nil {
