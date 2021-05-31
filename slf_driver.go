@@ -79,7 +79,7 @@ func (t *StdDriver) GetLevel(_ string) Level {
 func (t *StdDriver) asyncPrint() {
 	defer func() {
 		if err := recover(); err != nil {
-			_, _ = t.errout.Write([]byte("StdDriver panic: \n" + string(debug.Stack())))
+			_, _ = t.errout.Write([]byte(fmt.Sprintf("StdDriver panic: %v\n%s", err, string(debug.Stack()))))
 		}
 	}()
 	var p efmt.Printer

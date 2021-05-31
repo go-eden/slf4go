@@ -23,7 +23,7 @@ func TestGetLogger(t *testing.T) {
 	log.Fatalf("import cycle not allowed! %s", "shit...")
 	log.Fatal("never reach here")
 	log.Panic("panic...")
-	time.Sleep(time.Millisecond * 10)
+	time.Sleep(time.Millisecond)
 }
 
 func TestDefaultLogger(t *testing.T) {
@@ -43,7 +43,7 @@ func TestDefaultLogger(t *testing.T) {
 	Panic("panic")
 	Fatalf("import cycle not allowed! %s", "shit...")
 	Fatal("never reach here")
-	time.Sleep(time.Millisecond * 10)
+	time.Sleep(time.Millisecond)
 }
 
 func TestNewLogger(t *testing.T) {
@@ -57,6 +57,7 @@ func TestNewLogger(t *testing.T) {
 	log.Fatal("fatal")
 
 	log.Warn(GetContext())
+	time.Sleep(time.Millisecond)
 }
 
 func TestLoggerLevelFilter(t *testing.T) {

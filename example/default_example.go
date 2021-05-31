@@ -20,4 +20,6 @@ func main() {
 	slog.Panicf("panic time: %v", time.Now())
 	//log.Fatal("fatal log")
 	//log.Fatalf("fatal time: %v", time.Now())
+
+	time.Sleep(time.Millisecond)
 }
