@@ -30,7 +30,7 @@ func TestRegisterHook(t *testing.T) {
 	log.Errorf("what?..$%s$", "XD")
 	log.Fatalf("import cycle not allowed! %s", "shit...")
 	log.Fatal("never reach here?")
-	time.Sleep(time.Millisecond)
+	time.Sleep(time.Millisecond * 50)
 
 	assert.True(t, atomic.LoadUint32(&count) == 13, atomic.LoadUint32(&count))
 }
