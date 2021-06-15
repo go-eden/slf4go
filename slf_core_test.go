@@ -124,4 +124,7 @@ func TestConcurrency(t *testing.T) {
 		}()
 	}
 	time.Sleep(time.Second)
+
+	// use default StdDriver for avoiding break other tests
+	SetDriver(new(StdDriver))
 }

@@ -10,6 +10,9 @@ func TestNilDriver(t *testing.T) {
 
 	log := GetLogger()
 	log.Info("what???")
+
+	// use default StdDriver for avoiding break other tests
+	SetDriver(new(StdDriver))
 }
 
 // BenchmarkLogger-12    	 3000000	       420 ns/op	     112 B/op	       2 allocs/op
