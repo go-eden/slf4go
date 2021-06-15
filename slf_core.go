@@ -29,7 +29,7 @@ func init() {
 	// setup default context
 	SetContext(exec)
 	// setup default driver
-	SetDriver(newStdDriver(stdBufSize))
+	SetDriver(new(StdDriver))
 	// setup default logger
 	globalLogger = newLogger(rootLoggerName).(*logger)
 	// setup default level
@@ -54,7 +54,7 @@ func SetDriver(d Driver) {
 	// close old driver
 	if replacedDriver != nil {
 		tmp := *(replacedDriver.(*Driver))
-		if tmp, ok := tmp.(*StdDriver); ok {
+		if tmp, ok := tmp.(*AsyncDriver); ok {
 			tmp.close()
 		}
 	}
@@ -62,6 +62,11 @@ func SetDriver(d Driver) {
 
 func getDriver() Driver {
 	return *globalDriver.Load().(*Driver)
+}
+
+// EnableAsyncDriver enable the AsyncDriver, it has better performance
+func EnableAsyncDriver() {
+	SetDriver(newAsyncDriver(stdBufSize))
 }
 
 // SetLevel update the global level, all lower level will not be send to driver to print

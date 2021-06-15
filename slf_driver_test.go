@@ -36,11 +36,11 @@ func BenchmarkDefaultLogger(b *testing.B) {
 }
 
 // use ring slice
-// BenchmarkStdDriverChannel-12    	 1638012	       728.1 ns/op	     144 B/op	       3 allocs/op
+// BenchmarkAsyncDriverChannel-12    	 1638012	       728.1 ns/op	     144 B/op	       3 allocs/op
 // use channel again
-// BenchmarkStdDriverChannel-12    	 1433360	       822.1 ns/op	     168 B/op	       4 allocs/op
-func BenchmarkStdDriverChannel(b *testing.B) {
-	d := newStdDriver(1 << 12)
+// BenchmarkAsyncDriverChannel-12    	 1433360	       822.1 ns/op	     168 B/op	       4 allocs/op
+func BenchmarkAsyncDriverChannel(b *testing.B) {
+	d := newAsyncDriver(1 << 12)
 	d.stdout = nil
 	SetDriver(d)
 	log := GetLogger()

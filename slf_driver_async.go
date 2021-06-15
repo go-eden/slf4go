@@ -21,15 +21,15 @@ type immutableLog struct {
 	DebugStack *string
 }
 
-// StdDriver The default driver, just print stdout directly
-type StdDriver struct {
+// AsyncDriver The async driver, it should have better performance
+type AsyncDriver struct {
 	stdout  io.Writer
 	errout  io.Writer
 	channel chan immutableLog
 }
 
-func newStdDriver(bufsize int32) *StdDriver {
-	t := &StdDriver{
+func newAsyncDriver(bufsize int32) *AsyncDriver {
+	t := &AsyncDriver{
 		stdout:  os.Stdout,
 		errout:  os.Stderr,
 		channel: make(chan immutableLog, bufsize),
@@ -40,11 +40,11 @@ func newStdDriver(bufsize int32) *StdDriver {
 	return t
 }
 
-func (t *StdDriver) Name() string {
+func (t *AsyncDriver) Name() string {
 	return "default"
 }
 
-func (t *StdDriver) Print(l *Log) {
+func (t *AsyncDriver) Print(l *Log) {
 	iLog := immutableLog{
 		Time:       l.Time,
 		Logger:     l.Logger,
@@ -71,15 +71,15 @@ func (t *StdDriver) Print(l *Log) {
 	}
 }
 
-func (t *StdDriver) GetLevel(_ string) Level {
+func (t *AsyncDriver) GetLevel(_ string) Level {
 	return TraceLevel
 }
 
 // print log asynchronously
-func (t *StdDriver) asyncPrint() {
+func (t *AsyncDriver) asyncPrint() {
 	defer func() {
 		if err := recover(); err != nil {
-			_, _ = t.errout.Write([]byte(fmt.Sprintf("StdDriver panic: %v\n%s", err, string(debug.Stack()))))
+			_, _ = t.errout.Write([]byte(fmt.Sprintf("AsyncDriver panic: %v\n%s", err, string(debug.Stack()))))
 		}
 	}()
 	var p efmt.Printer
@@ -104,6 +104,6 @@ func (t *StdDriver) asyncPrint() {
 }
 
 // close this driver
-func (t *StdDriver) close() {
+func (t *AsyncDriver) close() {
 	t.channel <- immutableLog{Time: -1}
 }

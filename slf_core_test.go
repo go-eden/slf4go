@@ -108,7 +108,7 @@ func TestLoggerLevelFilter(t *testing.T) {
 
 func TestConcurrency(t *testing.T) {
 	log := NewLogger("concurrency")
-	d := newStdDriver(1 << 12)
+	d := newAsyncDriver(1 << 12)
 	d.stdout = nil
 	SetDriver(d)
 
