@@ -2,6 +2,7 @@ package slog
 
 import (
 	"github.com/stretchr/testify/assert"
+	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -113,6 +114,8 @@ func TestConcurrency(t *testing.T) {
 	SetDriver(d)
 
 	const threadNum = 64
+	var wait sync.WaitGroup
+	wait.Add(threadNum)
 	for i := 0; i < threadNum; i++ {
 		threadId := i
 		go func() {
@@ -121,8 +124,10 @@ func TestConcurrency(t *testing.T) {
 				log.Error(threadId, x, " xxxxxxxxxxxxxxxx")
 				time.Sleep(time.Microsecond * 100)
 			}
+			wait.Done()
 		}()
 	}
+	wait.Wait()
 	time.Sleep(time.Second)
 
 	// use default StdDriver for avoiding break other tests
