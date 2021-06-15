@@ -1,6 +1,6 @@
 module github.com/go-eden/slf4go
 
-go 1.14
+go 1.15
 
 require (
 	github.com/go-eden/common v0.1.14
