@@ -8,7 +8,7 @@ import (
 
 type logger struct {
 	name   string
-	fields atomic.Value // Fields
+	fields atomic.Value // Fields in logger, could be shared in all goroutines.
 }
 
 func newLogger(s string) Logger {
@@ -202,14 +202,22 @@ func (l *logger) Fatalf(format string, v ...interface{}) {
 }
 
 func (l *logger) print(level Level, pc uintptr, stack *string, v ...interface{}) {
-	log := NewLog(level, pc, stack, nil, v, l.fields.Load().(Fields))
+	var cxtFields Fields
+	if v := globalCxtFields.Get(); v != nil {
+		cxtFields = v.(Fields)
+	}
+	log := NewLog(level, pc, stack, nil, v, l.fields.Load().(Fields), cxtFields)
 	log.Logger = l.name
 	globalHook.broadcast(log)
 	getDriver().Print(log)
 }
 
 func (l *logger) printf(level Level, pc uintptr, stack *string, format string, v ...interface{}) {
-	log := NewLog(level, pc, stack, &format, v, l.fields.Load().(Fields))
+	var cxtFields Fields
+	if v := globalCxtFields.Get(); v != nil {
+		cxtFields = v.(Fields)
+	}
+	log := NewLog(level, pc, stack, &format, v, l.fields.Load().(Fields), cxtFields)
 	log.Logger = l.name
 	globalHook.broadcast(log)
 	getDriver().Print(log)

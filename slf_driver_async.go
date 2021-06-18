@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"runtime/debug"
+	"strings"
 	"time"
 )
 
@@ -14,9 +15,10 @@ type immutableLog struct {
 	Logger     string
 	Pid        int
 	Gid        int
+	Level      Level
 	Stack      *Stack
 	Fields     Fields
-	Level      Level
+	CxtFields  Fields
 	Msg        string
 	DebugStack *string
 }
@@ -52,6 +54,7 @@ func (t *AsyncDriver) Print(l *Log) {
 		Gid:        l.Gid,
 		Stack:      l.Stack,
 		Fields:     l.Fields,
+		CxtFields:  l.CxtFields,
 		Level:      l.Level,
 		DebugStack: l.DebugStack,
 	}
@@ -88,15 +91,29 @@ func (t *AsyncDriver) asyncPrint() {
 		if !ok || l.Time == -1 {
 			return
 		}
-
+		var fields []string
+		if len(l.CxtFields) > 0 {
+			for k, v := range l.CxtFields {
+				fields = append(fields, fmt.Sprintf("%s=%v", k, v))
+			}
+		}
+		if len(l.Fields) > 0 {
+			for k, v := range l.Fields {
+				fields = append(fields, fmt.Sprintf("%s=%v", k, v))
+			}
+		}
+		var msg = l.Msg
+		if len(fields) > 0 {
+			msg = "[" + strings.Join(fields, ", ") + "] " + msg
+		}
 		// format and print log to stdout
 		if w := t.stdout; w != nil {
 			var body []byte
 			ts := time.Unix(0, l.Time*1000).Format("2006-01-02 15:04:05.999999")
 			if l.DebugStack != nil {
-				body = p.Sprintf("%-26s [%d] [%-5s] [%s] %s:%d %s\n%s\n", ts, l.Gid, l.Level.String(), l.Logger, l.Stack.Filename, l.Stack.Line, l.Msg, *l.DebugStack)
+				body = p.Sprintf("%-26s [%d] [%-5s] [%s] %s:%d %s\n%s\n", ts, l.Gid, l.Level.String(), l.Logger, l.Stack.Filename, l.Stack.Line, msg, *l.DebugStack)
 			} else {
-				body = p.Sprintf("%-26s [%d] [%-5s] [%s] %s:%d %s\n", ts, l.Gid, l.Level.String(), l.Logger, l.Stack.Filename, l.Stack.Line, l.Msg)
+				body = p.Sprintf("%-26s [%d] [%-5s] [%s] %s:%d %s\n", ts, l.Gid, l.Level.String(), l.Logger, l.Stack.Filename, l.Stack.Line, msg)
 			}
 			_, _ = w.Write(body)
 		}

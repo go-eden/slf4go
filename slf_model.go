@@ -2,7 +2,7 @@ package slog
 
 import (
 	"github.com/go-eden/common/etime"
-	"github.com/go-eden/common/goid"
+	"github.com/go-eden/routine"
 )
 
 // Fields represents attached fileds of log
@@ -10,13 +10,16 @@ type Fields map[string]interface{}
 
 // NewFields merge multi fileds into new Fields instance
 func NewFields(fields ...Fields) Fields {
-	result := Fields{}
+	var size int
 	for _, item := range fields {
-		if item == nil {
-			continue
-		}
-		for k, v := range item {
-			result[k] = v
+		size += len(item)
+	}
+	result := make(Fields, size)
+	for _, item := range fields {
+		if item != nil {
+			for k, v := range item {
+				result[k] = v
+			}
 		}
 	}
 	return result
@@ -32,15 +35,16 @@ type Log struct {
 	Stack      *Stack  `json:"stack"`       // the stack info of this log
 	DebugStack *string `json:"debug_stack"` // the debug stack of this log
 
-	Level  Level         `json:"level"`  // log's level
-	Format *string       `json:"format"` // log's format
-	Args   []interface{} `json:"args"`   // log's format args
-	Fields Fields        `json:"fields"` // additional custom fields
+	Level     Level         `json:"level"`      // log's level
+	Format    *string       `json:"format"`     // log's format
+	Args      []interface{} `json:"args"`       // log's format args
+	Fields    Fields        `json:"fields"`     // additional custom fields
+	CxtFields Fields        `json:"cxt_fields"` // caller's goroutine context fields
 }
 
 // NewLog create an new Log instance
 // for better performance, caller should be provided by upper
-func NewLog(level Level, pc uintptr, debugStack *string, format *string, args []interface{}, fields Fields) *Log {
+func NewLog(level Level, pc uintptr, debugStack *string, format *string, args []interface{}, fields, cxtFields Fields) *Log {
 	var stack *Stack
 	// support first args as custom stack
 	if format == nil && len(args) > 1 {
@@ -58,14 +62,15 @@ func NewLog(level Level, pc uintptr, debugStack *string, format *string, args []
 		Logger: stack.Package,
 
 		Pid:        pid,
-		Gid:        int(goid.Gid()),
+		Gid:        int(routine.Goid()),
 		Stack:      stack,
 		DebugStack: debugStack,
 
-		Level:  level,
-		Format: format,
-		Args:   args,
-		Fields: fields,
+		Level:     level,
+		Format:    format,
+		Args:      args,
+		Fields:    fields,
+		CxtFields: cxtFields,
 	}
 }
 

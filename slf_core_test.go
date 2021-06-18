@@ -2,13 +2,14 @@ package slog
 
 import (
 	"github.com/stretchr/testify/assert"
+	"math/rand"
 	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
 )
 
-func TestGetLogger(t *testing.T) {
+func TestLogger(t *testing.T) {
 	log := GetLogger()
 	log.Trace("are you prety?", true)
 	log.Debugf("are you prety? %t", true)
@@ -24,7 +25,16 @@ func TestGetLogger(t *testing.T) {
 	log.Fatalf("import cycle not allowed! %s", "shit...")
 	log.Fatal("never reach here")
 	log.Panic("panic...")
-	time.Sleep(time.Millisecond)
+
+	SetContextField("uid", rand.Uint64())
+	SetContextFields(Fields{"admin": true, "username": "jackson"})
+	log.Infof("with uid, admin, username context variable")
+
+	log.BindFields(Fields{"tid": "bytedance"})
+	log.Infof("with tid logger binded fields")
+
+	DelContextField("uid")
+	log.Infof("no uid context variable")
 }
 
 func TestDefaultLogger(t *testing.T) {
@@ -47,18 +57,24 @@ func TestDefaultLogger(t *testing.T) {
 	time.Sleep(time.Millisecond)
 }
 
-func TestNewLogger(t *testing.T) {
-	log := NewLogger("slf4go")
-	log.Info("hello world")
-	log.Trace("hhhhhh")
-	SetLevel(WarnLevel)
-	log.Info("no log")
-	log.Error("error")
-	SetContext("test")
-	log.Fatal("fatal")
+func TestAsyncLogger(t *testing.T) {
+	EnableAsyncDriver()
 
-	log.Warn(GetContext())
+	log := GetLogger()
+	log.Infof("no fields")
+
+	SetContextField("uid", rand.Uint64())
+	SetContextFields(Fields{"admin": true, "username": "jackson"})
+	log.Infof("with uid, admin, username context variable")
+
+	log.BindFields(Fields{"tid": "bytedance"})
+	log.Infof("with tid logger binded fields")
+
+	DelContextField("uid")
+	log.Infof("no uid context variable")
+
 	time.Sleep(time.Millisecond)
+	SetDriver(new(StdDriver))
 }
 
 func TestLoggerLevelFilter(t *testing.T) {

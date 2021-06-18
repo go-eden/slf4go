@@ -1,31 +1,11 @@
 package slog
 
 import (
-	"github.com/go-eden/common/goid"
 	"os"
 	"runtime"
 	"testing"
 	"time"
 )
-
-func TestGid(t *testing.T) {
-	for i := 0; i < 100; i++ {
-		go func() {
-			id := goid.Gid() // Get a unique ID for current goroutine. It's guaranteed to be unique.
-			t.Log(id)
-		}()
-	}
-	time.Sleep(time.Second)
-}
-
-// BenchmarkGid-12    	302519848	         3.76 ns/op	       0 B/op	       0 allocs/op
-func BenchmarkGid(b *testing.B) {
-	b.ReportAllocs()
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		goid.Gid()
-	}
-}
 
 func TestPid(t *testing.T) {
 	t.Log(os.Getpid())
@@ -44,7 +24,7 @@ func BenchmarkPid(b *testing.B) {
 func TestNewLog(t *testing.T) {
 	var pc [1]uintptr
 	_ = runtime.Callers(2, pc[:])
-	l := NewLog(TraceLevel, pc[0], nil, nil, nil, nil)
+	l := NewLog(TraceLevel, pc[0], nil, nil, nil, nil, nil)
 	t.Log(l)
 }
 
@@ -61,6 +41,6 @@ func BenchmarkNewLog(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		_ = runtime.Callers(2, pc[:])
-		NewLog(TraceLevel, pc[0], nil, nil, nil, nil)
+		NewLog(TraceLevel, pc[0], nil, nil, nil, nil, nil)
 	}
 }
