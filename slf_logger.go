@@ -168,7 +168,7 @@ func (l *logger) Panic(v ...interface{}) {
 	var pc [1]uintptr
 	_ = runtime.Callers(2, pc[:])
 	stack := string(debug.Stack())
-	l.print(FatalLevel, pc[0], &stack, v...)
+	l.print(PanicLevel, pc[0], &stack, v...)
 }
 
 func (l *logger) Panicf(format string, v ...interface{}) {
@@ -178,7 +178,7 @@ func (l *logger) Panicf(format string, v ...interface{}) {
 	var pc [1]uintptr
 	_ = runtime.Callers(2, pc[:])
 	stack := string(debug.Stack())
-	l.printf(ErrorLevel, pc[0], &stack, format, v...)
+	l.printf(PanicLevel, pc[0], &stack, format, v...)
 }
 
 func (l *logger) Fatal(v ...interface{}) {
