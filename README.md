@@ -6,7 +6,7 @@ Simple logger facade for Golang, inspired by `slf4j`, which focused on performan
 
 Before introducing this library, let's walk through the composition of logging library.
 
-1. **Provide API**: like `Trade` `Debug` `Info` `Warn` `Error` etc.
+1. **Provide API**: like `Trace` `Debug` `Info` `Warn` `Error` etc.
 2. **Collect Info**: like timestamp, stacktrace, and other context fields etc. 
 3. **Format & Store**: print log into `stdout` or store it directly etc.
 
