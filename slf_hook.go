@@ -61,7 +61,7 @@ func (t *hooks) addHook(f func(*Log)) {
 		go func() {
 			defer func() {
 				if recover() != nil {
-					Errorf("BUG: async-boradcast error:\n", string(debug.Stack()))
+					Errorf("BUG: async-broadcast error:\n", string(debug.Stack()))
 				}
 			}()
 			for logInst := range t.logChan {
