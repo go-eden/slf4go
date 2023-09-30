@@ -2,7 +2,7 @@ package slog
 
 import (
 	"github.com/go-eden/common/etime"
-	"github.com/go-eden/routine"
+	"github.com/timandy/routine"
 )
 
 // Fields represents attached fileds of log

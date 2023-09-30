@@ -1,13 +1,14 @@
 package slog
 
 import (
-	"github.com/go-eden/common/etime"
-	"github.com/go-eden/routine"
 	"os"
 	"runtime"
 	"runtime/debug"
 	"strings"
 	"sync/atomic"
+
+	"github.com/go-eden/common/etime"
+	"github.com/timandy/routine"
 )
 
 var (
@@ -16,10 +17,10 @@ var (
 	startTime = etime.NowMicrosecond() - 1 // the start time of current process
 
 	globalHook         = newHooks()
-	globalLogger       *logger              // global default logger
-	globalDriver       atomic.Value         // global driver
-	globalLevelSetting LevelSetting         // global setting
-	globalCxtFields    routine.LocalStorage // Fields in goroutine's local storage.
+	globalLogger       *logger             // global default logger
+	globalDriver       atomic.Value        // global driver
+	globalLevelSetting LevelSetting        // global setting
+	globalCxtFields    routine.ThreadLocal // Fields in goroutine's local storage.
 )
 
 func init() {
@@ -33,7 +34,7 @@ func init() {
 	// setup default driver
 	SetDriver(new(StdDriver))
 	// init global localstorage
-	globalCxtFields = routine.NewLocalStorage()
+	globalCxtFields = routine.NewThreadLocal()
 	// setup default logger
 	globalLogger = newLogger(rootLoggerName).(*logger)
 	// setup default level

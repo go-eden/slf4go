@@ -1,12 +1,13 @@
-package main
+package example_test
 
 import (
-	slog "github.com/go-eden/slf4go"
 	"math/rand"
 	"time"
+
+	slog "github.com/go-eden/slf4go"
 )
 
-func main() {
+func Example_default() {
 	log := slog.NewLogger("example")
 	log.Trace("trace log")
 	log.Tracef("trace time: %v", time.Now())

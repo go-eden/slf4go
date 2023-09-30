@@ -1,11 +1,12 @@
-package main
+package example_test
 
 import (
-	slog "github.com/go-eden/slf4go"
 	"time"
+
+	slog "github.com/go-eden/slf4go"
 )
 
-func main() {
+func Example_custom() {
 	testLog := slog.NewLogger("test")
 	testLog.Info("hello world")
 
